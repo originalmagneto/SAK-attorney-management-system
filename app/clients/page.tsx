@@ -85,6 +85,10 @@ const clients = [
   },
 ];
 
+const ClientProgressBar = ({ value }: { value: number }) => (
+  <Progress value={value} className="h-2" />
+);
+
 export default function ClientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
@@ -254,7 +258,7 @@ export default function ClientsPage() {
                   <p className="text-muted-foreground">Latest Case Progress</p>
                   <span className="font-medium">{client.stats.progress}%</span>
                 </div>
-                <Progress value={client.stats.progress} className="h-2" />
+                <ClientProgressBar value={client.stats.progress} />
                 <p className="text-xs text-muted-foreground mt-2">{client.stats.lastCase}</p>
               </div>
 
