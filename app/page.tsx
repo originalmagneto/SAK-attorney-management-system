@@ -1,3 +1,5 @@
+'use client';
+
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +13,17 @@ import {
   ArrowUpRight,
 } from 'lucide-react';
 import Link from 'next/link';
+import {
+  Area,
+  AreaChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 const stats = [
   {
@@ -81,6 +94,24 @@ const recentActivity = [
   },
 ];
 
+const revenueData = [
+  { month: 'Jan', revenue: 12400 },
+  { month: 'Feb', revenue: 15600 },
+  { month: 'Mar', revenue: 14200 },
+  { month: 'Apr', revenue: 18900 },
+  { month: 'May', revenue: 16800 },
+  { month: 'Jun', revenue: 21500 },
+];
+
+const caseDistribution = [
+  { name: 'Corporate', value: 35 },
+  { name: 'Civil', value: 25 },
+  { name: 'Criminal', value: 15 },
+  { name: 'Family', value: 25 },
+];
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+
 export default function Home() {
   return (
     <div className="p-8">
@@ -118,6 +149,52 @@ export default function Home() {
             </Card>
           </Link>
         ))}
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2 mt-8">
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Revenue Trend</h2>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={revenueData}>
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Area
+                  type="monotone"
+                  dataKey="revenue"
+                  stroke="#0088FE"
+                  fill="#0088FE"
+                  fillOpacity={0.2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        <Card className="p-6">
+          <h2 className="text-xl font-semibold mb-4">Case Distribution</h2>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={caseDistribution}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
+                >
+                  {caseDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
       </div>
 
       <div className="mt-8">
