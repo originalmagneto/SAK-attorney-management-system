@@ -121,7 +121,7 @@ export default function Home() {
         <div>
           <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground mt-1">
-            Welcome back! Here's your practice overview.
+            Welcome back! Here is your practice overview.
           </p>
         </div>
         <Button variant="outline" size="icon">
