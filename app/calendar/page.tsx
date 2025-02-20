@@ -14,14 +14,38 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const eventTypes = {
+type EventType = 'court' | 'meeting' | 'deadline' | 'internal';
+
+interface EventTypeConfig {
+  color: string;
+  label: string;
+}
+
+interface Participant {
+  name: string;
+  avatar: string;
+}
+
+interface CalendarEvent {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  type: EventType;
+  location: string;
+  participants?: Participant[];
+  description: string;
+  priority: 'high' | 'medium' | 'low';
+}
+
+const eventTypes: Record<EventType, EventTypeConfig> = {
   court: { color: 'bg-red-500', label: 'Court Hearing' },
   meeting: { color: 'bg-blue-500', label: 'Meeting' },
   deadline: { color: 'bg-amber-500', label: 'Deadline' },
   internal: { color: 'bg-green-500', label: 'Internal' },
 };
 
-const events = [
+const events: CalendarEvent[] = [
   {
     id: 1,
     title: 'Court Hearing - Smith vs. Johnson',
