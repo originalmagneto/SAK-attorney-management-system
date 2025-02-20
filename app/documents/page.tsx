@@ -27,9 +27,6 @@ import {
   Users,
   LayoutGrid,
   LayoutList,
-  FileImage,
-  FilePdf,
-  FileCode,
   Share2,
 } from 'lucide-react';
 import {
@@ -63,7 +60,7 @@ const documents = [
     size: '1.8 MB',
     status: 'Final',
     preview: '/images/pdf-preview.png',
-    icon: FilePdf,
+    icon: FileText, // Changed from FilePdf
     sharedWith: ['Legal Team'],
     progress: 100
   },
@@ -76,7 +73,7 @@ const documents = [
     size: '3.1 MB',
     status: 'Under Review',
     preview: '/images/pdf-preview.png',
-    icon: FilePdf,
+    icon: FileText, // Changed from FilePdf
     sharedWith: ['Brown Family', 'Tax Advisor'],
     progress: 80
   },
