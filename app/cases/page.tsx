@@ -60,7 +60,19 @@ const cases = [
   },
 ];
 
-const timelineEvents = [
+type TimelineEvent = {
+  id: number;
+  type: 'court' | 'document' | 'message';
+  title: string;
+  description: string;
+  date: string;
+  user?: {
+    name: string;
+    avatar: string;
+  };
+};
+
+const timelineEvents: TimelineEvent[] = [
   {
     id: 1,
     type: 'court',
