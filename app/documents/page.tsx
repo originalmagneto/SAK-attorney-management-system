@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
+import { FolderStructure } from '@/components/folder-structure';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -28,6 +29,12 @@ import {
   LayoutGrid,
   LayoutList,
   Share2,
+  MessageSquare,
+  History,
+  Eye,
+  Lock,
+  UserPlus,
+  AlertCircle
 } from 'lucide-react';
 import {
   Select,
@@ -253,68 +260,127 @@ export default function DocumentsPage() {
           </Table>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {documents.map((doc) => (
-            <Card key={doc.id} className="overflow-hidden">
-              <div className="p-4 bg-accent/50">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-background rounded-lg">
-                      <doc.icon className="h-6 w-6 text-primary" />
+        <div className="grid grid-cols-12 gap-6">
+          <div className="col-span-3">
+            <FolderStructure
+              onCreateFolder={(parentId) => {
+                // Implement folder creation logic
+                console.log('Create folder in:', parentId);
+              }}
+              onUploadFiles={(folderId) => {
+                // Implement file upload logic
+                console.log('Upload files to:', folderId);
+              }}
+            />
+          </div>
+          
+          <div className="col-span-9">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {documents.map((doc) => (
+                <Card key={doc.id} className="overflow-hidden transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
+                  <div className="p-4 bg-accent/50">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-background rounded-lg">
+                          <doc.icon className="h-6 w-6 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="font-medium truncate" title={doc.name}>
+                            {doc.name}
+                          </h3>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {doc.case}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" className="hover:bg-background/80" title="Comments">
+                          <MessageSquare className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="hover:bg-background/80" title="Version History">
+                          <History className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="hover:bg-background/80" title="Preview">
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="hover:bg-background/80" title="Access Control">
+                          <Lock className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="hover:bg-background/80" title="Share">
+                          <UserPlus className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-medium truncate" title={doc.name}>
-                        {doc.name}
-                      </h3>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {doc.case}
-                      </p>
+                    <Progress value={doc.progress} className="h-1" />
+                  </div>
+                  
+                  <div className="p-4 space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Status</span>
+                          <Badge 
+                            variant={doc.status === 'Final' ? 'default' : 
+                                   doc.status === 'Draft' ? 'secondary' : 'outline'}
+                            className="animate-pulse"
+                          >
+                            {doc.status}
+                          </Badge>
+                        </div>
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Last modified</span>
+                          <span className="font-medium">{doc.lastModified}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Size</span>
+                          <span className="font-medium">{doc.size}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">Progress</span>
+                          <span className="font-medium">{doc.progress}%</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 bg-accent/50 p-2 rounded-lg">
+                      <Share2 className="h-4 w-4 text-primary" />
+                      <div className="text-sm">
+                        <span className="font-medium">Shared with: </span>
+                        {doc.sharedWith.join(', ')}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="sm" className="text-yellow-600 hover:text-yellow-700">
+                          <AlertCircle className="h-4 w-4 mr-2" />
+                          Needs Review
+                        </Button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-2" />
+                          Preview
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <Download className="h-4 w-4 mr-2" />
+                          Download
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </div>
-                <Progress value={doc.progress} className="h-1" />
-              </div>
-              
-              <div className="p-4 space-y-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Status</span>
-                  <Badge 
-                    variant={doc.status === 'Final' ? 'default' : 
-                           doc.status === 'Draft' ? 'secondary' : 'outline'}
-                  >
-                    {doc.status}
-                  </Badge>
-                </div>
-                
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Last modified</span>
-                  <span>{doc.lastModified}</span>
-                </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">Size</span>
-                  <span>{doc.size}</span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Share2 className="h-4 w-4 text-muted-foreground" />
-                  <div className="text-sm text-muted-foreground">
-                    Shared with {doc.sharedWith.join(', ')}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-end gap-2">
-                  <Button variant="outline" size="sm">
-                    <Download className="h-4 w-4 mr-2" />
-                    Download
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          ))}
+                </Card>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>
