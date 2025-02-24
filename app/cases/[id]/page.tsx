@@ -13,6 +13,8 @@ import {
   FileText, Users, Clock, Calendar, MoreVertical,
   MessagesSquare, ArrowRight, Bell
 } from 'lucide-react';
+import { DocumentVersionControl } from '@/components/document-version-control';
+import { TaskBoard } from '@/components/task-board';
 
 const timelineEvents = [
   {
