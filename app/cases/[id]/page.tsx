@@ -224,10 +224,13 @@ export default function CaseDetailPage() {
         <TabsContent value="documents">
           <Card className="gradient-card hover-card glass-effect p-6">
             <h3 className="font-semibold mb-4">Case Documents</h3>
-            <div className="space-y-4">
-              {/* Replace with proper document list implementation */}
-              <p className="text-muted-foreground">No documents available.</p>
-            </div>
+            <DocumentVersionControl documentId={1} currentVersion="v2.0" />
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="tasks">
+          <Card className="gradient-card hover-card glass-effect p-6">
+            <TaskBoard />
           </Card>
         </TabsContent>
       </Tabs>

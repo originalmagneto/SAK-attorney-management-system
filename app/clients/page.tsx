@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
+import { AIOnboardingWizard } from '@/components/ai-onboarding-wizard';
 import {
   Search,
   Filter,
@@ -92,6 +93,7 @@ const ClientProgressBar = ({ value }: { value: number }) => (
 export default function ClientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const totalRevenue = clients.reduce((sum, client) => {
     return sum + parseInt(client.stats.revenue.replace('€', '').replace(',', ''));
@@ -100,7 +102,7 @@ export default function ClientsPage() {
   const totalHours = clients.reduce((sum, client) => sum + client.stats.hoursLogged, 0);
 
   return (
-    <div className="p-8">
+    <main className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold">Clients</h1>
@@ -108,7 +110,7 @@ export default function ClientsPage() {
             Manage your client relationships
           </p>
         </div>
-        <Button>
+        <Button onClick={() => setShowOnboarding(true)}>
           <UserPlus className="h-4 w-4 mr-2" />
           New Client
         </Button>
@@ -188,16 +190,16 @@ export default function ClientsPage() {
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search clients..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 w-full sm:w-[300px]"
-          />
-        </div>
         <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search clients..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 w-full sm:w-[300px] transition-shadow duration-200 hover:shadow-sm focus:shadow-md"
+            />
+          </div>
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Filter by type" />
@@ -208,79 +210,101 @@ export default function ClientsPage() {
               <SelectItem value="individual">Individual</SelectItem>
             </SelectContent>
           </Select>
-          <Button variant="outline" size="icon">
+        </div>
+        <div className="flex items-center gap-4">
+          <Select defaultValue="newest">
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="newest">Newest Clients</SelectItem>
+              <SelectItem value="revenue">Highest Revenue</SelectItem>
+              <SelectItem value="cases">Most Active Cases</SelectItem>
+              <SelectItem value="hours">Most Hours Logged</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="icon" className="hover:bg-accent/20 transition-colors">
             <Filter className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {clients.map((client) => (
-          <Card key={client.id} className="p-6 hover:bg-accent/5 transition-colors">
-            <div className="flex items-start justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={client.avatar} alt={client.name} />
-                  <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-semibold">{client.name}</h3>
-                  <p className="text-sm text-muted-foreground">{client.company}</p>
+      {showOnboarding ? (
+        <div className="mt-8">
+          <AIOnboardingWizard />
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {clients.map((client) => (
+            <Card 
+              key={client.id} 
+              className="group p-6 hover:bg-accent/5 transition-all duration-200 hover:shadow-lg hover:scale-[1.02] cursor-pointer"
+            >
+              <div className="flex items-start justify-between mb-6">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={client.avatar} alt={client.name} />
+                    <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h3 className="font-semibold">{client.name}</h3>
+                    <p className="text-sm text-muted-foreground">{client.company}</p>
+                  </div>
                 </div>
-              </div>
-              <Badge variant={client.status === 'Active' ? 'default' : 'secondary'}>
-                {client.status}
-              </Badge>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Active Cases</p>
-                  <p className="font-medium">{client.stats.activeCases}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Closed Cases</p>
-                  <p className="font-medium">{client.stats.closedCases}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Revenue</p>
-                  <p className="font-medium">{client.stats.revenue}</p>
-                </div>
-                <div>
-                  <p className="text-muted-foreground">Hours Logged</p>
-                  <p className="font-medium">{client.stats.hoursLogged}h</p>
-                </div>
+                <Badge variant={client.status === 'Active' ? 'default' : 'secondary'}>
+                  {client.status}
+                </Badge>
               </div>
 
-              <div>
-                <div className="flex items-center justify-between text-sm mb-2">
-                  <p className="text-muted-foreground">Latest Case Progress</p>
-                  <span className="font-medium">{client.stats.progress}%</span>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-sm bg-accent/5 rounded-lg p-4 transition-transform duration-200 group-hover:scale-[1.02]">
+                  <div>
+                    <p className="text-muted-foreground">Active Cases</p>
+                    <p className="font-medium">{client.stats.activeCases}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Closed Cases</p>
+                    <p className="font-medium">{client.stats.closedCases}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Revenue</p>
+                    <p className="font-medium">{client.stats.revenue}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Hours Logged</p>
+                    <p className="font-medium">{client.stats.hoursLogged}h</p>
+                  </div>
                 </div>
-                <ClientProgressBar value={client.stats.progress} />
-                <p className="text-xs text-muted-foreground mt-2">{client.stats.lastCase}</p>
-              </div>
 
-              <div className="flex justify-between items-center pt-4 border-t">
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="sm">
-                    <Mail className="h-4 w-4 mr-1" />
-                    Email
+                <div>
+                  <div className="flex items-center justify-between text-sm mb-2">
+                    <p className="text-muted-foreground">Latest Case Progress</p>
+                    <span className="font-medium">{client.stats.progress}%</span>
+                  </div>
+                  <ClientProgressBar value={client.stats.progress} />
+                  <p className="text-xs text-muted-foreground mt-2">{client.stats.lastCase}</p>
+                </div>
+
+                <div className="flex justify-between items-center pt-4 border-t">
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="sm">
+                      <Mail className="h-4 w-4 mr-1" />
+                      Email
+                    </Button>
+                    <Button variant="ghost" size="sm">
+                      <Phone className="h-4 w-4 mr-1" />
+                      Call
+                    </Button>
+                  </div>
+                  <Button variant="ghost" size="icon">
+                    <MoreVertical className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="sm">
-                    <Phone className="h-4 w-4 mr-1" />
-                    Call
-                  </Button>
                 </div>
-                <Button variant="ghost" size="icon">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
               </div>
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </main>
   );
 }
