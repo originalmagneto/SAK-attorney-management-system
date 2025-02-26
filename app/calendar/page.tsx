@@ -1,6 +1,5 @@
 'use client';
-
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -33,10 +32,12 @@ import {
   ChevronRight,
   LayoutGrid,
   LayoutList,
+  AlertTriangle,
 } from 'lucide-react';
 import { sampleEvents } from '@/lib/sample-calendar';
 import { CalendarEvent, EventType } from '@/types/calendar';
-import { format } from 'date-fns';
+import { format, isSameDay, isToday, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, addDays, isSameMonth } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 function getEventColor(type: EventType) {
   switch (type) {
@@ -131,20 +132,86 @@ function EventCard({ event }: { event: CalendarEvent }) {
   );
 }
 
+function CalendarDayCell({ date, events }: { date: Date; events: CalendarEvent[] }) {
+  const dayEvents = events.filter(event => isSameDay(new Date(event.start), date));
+  
+  return (
+    <div className={cn(
+      "min-h-[120px] p-2 border border-border rounded-lg",
+      !isSameMonth(date, new Date()) && "bg-muted/50",
+      isToday(date) && "border-primary"
+    )}>
+      <div className="font-medium text-sm mb-1">
+        {format(date, 'd')}
+      </div>
+      <div className="space-y-1">
+        {dayEvents.map(event => (
+          <div
+            key={event.id}
+            className={cn(
+              "text-xs p-1 rounded truncate hover:shadow-md transition-shadow cursor-pointer",
+              getEventColor(event.type),
+              "text-white"
+            )}
+          >
+            <div className="font-medium">{event.title}</div>
+            {!event.allDay && (
+              <div className="text-[10px] opacity-90">
+                {format(new Date(event.start), 'h:mm a')}
+              </div>
+            )}
+          </div>
+        ))}
+        {dayEvents.length > 3 && (
+          <div className="text-xs text-muted-foreground text-center">
+            +{dayEvents.length - 3} more
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function CalendarPage() {
   const [date, setDate] = useState<Date>(new Date());
-  const [view, setView] = useState<'month' | 'week' | 'day'>('week');
+  const [view, setView] = useState<'month' | 'week' | 'day'>('month');
   const [selectedEventType, setSelectedEventType] = useState<EventType | 'all'>('all');
 
-  const filteredEvents = sampleEvents.filter(
-    event =>
+  const filteredEvents = useMemo(() => 
+    sampleEvents.filter(event =>
       selectedEventType === 'all' || event.type === selectedEventType
+    ),
+    [selectedEventType]
+  );
+
+  // Generate days for month view
+  const monthDays = useMemo(() => {
+    const start = startOfWeek(startOfMonth(date));
+    const end = endOfWeek(endOfMonth(date));
+    return eachDayOfInterval({ start, end });
+  }, [date]);
+
+  const goToPreviousMonth = () => {
+    setDate(d => addDays(d, -30));
+  };
+
+  const goToNextMonth = () => {
+    setDate(d => addDays(d, 30));
+  };
+
+  const priorityEvents = useMemo(() => 
+    filteredEvents.filter(event => 
+      event.metadata.priority === 'critical' || 
+      event.type === 'SOL' || 
+      event.type === 'DEADLINE'
+    ),
+    [filteredEvents]
   );
 
   return (
     <div className="p-8">
       <div className="max-w-[1800px] mx-auto space-y-8">
-        {/* Header */}
+        {/* Header section - keep existing code */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Calendar</h1>
@@ -174,35 +241,53 @@ export default function CalendarPage() {
           </div>
         </div>
 
+        {/* Priority Events Banner */}
+        {priorityEvents.length > 0 && (
+          <Card className="p-4 border-red-500 bg-red-50 dark:bg-red-950/20">
+            <div className="flex items-center gap-2 text-red-600 mb-2">
+              <AlertTriangle className="h-5 w-5" />
+              <h3 className="font-semibold">Priority Events & Deadlines</h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {priorityEvents.map(event => (
+                <div
+                  key={event.id}
+                  className="flex items-center gap-2 text-sm"
+                >
+                  <div className={cn(
+                    "w-2 h-2 rounded-full",
+                    getEventColor(event.type)
+                  )} />
+                  <span className="font-medium">{event.title}</span>
+                  <span className="text-muted-foreground">
+                    {format(new Date(event.start), 'MMM d, h:mm a')}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
         {/* Calendar Controls */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center">
-              <Button variant="ghost" size="icon" onClick={() => {}}>
+              <Button variant="ghost" size="icon" onClick={goToPreviousMonth}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => {}}>
+              <Button variant="ghost" size="icon" onClick={goToNextMonth}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
               <h2 className="text-lg font-semibold px-4">
                 {format(date, 'MMMM yyyy')}
               </h2>
             </div>
-            <Tabs defaultValue="week" value={view} onValueChange={(v) => setView(v as 'month' | 'week' | 'day')}>
+            <Tabs defaultValue="month" value={view} onValueChange={(v) => setView(v as 'month' | 'week' | 'day')}>
               <TabsList>
                 <TabsTrigger value="month">Month</TabsTrigger>
                 <TabsTrigger value="week">Week</TabsTrigger>
                 <TabsTrigger value="day">Day</TabsTrigger>
               </TabsList>
-              <TabsContent value="month">
-                {/* Month view content */}
-              </TabsContent>
-              <TabsContent value="week">
-                {/* Week view content */}
-              </TabsContent>
-              <TabsContent value="day">
-                {/* Day view content */}
-              </TabsContent>
             </Tabs>
           </div>
           <div className="flex items-center gap-4">
@@ -237,18 +322,38 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        {/* Calendar Grid */}
-        <div className="grid grid-cols-7 gap-4">
-          {/* Calendar headers and grid will go here */}
+        {/* Calendar Grid - Month View */}
+        <div className="rounded-lg border bg-card">
+          {/* Calendar Headers */}
+          <div className="grid grid-cols-7 gap-px border-b bg-muted">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              <div key={day} className="p-2 text-center text-sm font-medium">
+                {day}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar Days Grid */}
+          <div className="grid grid-cols-7 gap-px bg-muted p-px">
+            {monthDays.map((day) => (
+              <CalendarDayCell
+                key={day.toISOString()}
+                date={day}
+                events={filteredEvents}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Events List */}
         <Card>
-          <ScrollArea className="h-[600px]">
+          <ScrollArea className="h-[400px]">
             <div className="p-6 space-y-4">
-              {filteredEvents.map(event => (
-                <EventCard key={event.id} event={event} />
-              ))}
+              {filteredEvents
+                .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime())
+                .map(event => (
+                  <EventCard key={event.id} event={event} />
+                ))}
             </div>
           </ScrollArea>
         </Card>

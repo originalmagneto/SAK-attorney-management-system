@@ -59,14 +59,14 @@ export function MessageThreadView({
   const [newMessage, setNewMessage] = useState('');
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [showContextBar, setShowContextBar] = useState(true);
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
+  
+  const contextIcon = {
+    case: <Briefcase className="h-4 w-4" />,
+    client: <Users className="h-4 w-4" />,
+    document: <FileText className="h-4 w-4" />,
+    event: <Calendar className="h-4 w-4" />,
+    general: <MessageSquare className="h-4 w-4" />
+  }[thread.contextType];
 
   const handleSend = () => {
     if (newMessage.trim()) {
@@ -76,14 +76,6 @@ export function MessageThreadView({
     }
   };
 
-  const contextIcon = {
-    case: <Briefcase className="h-4 w-4" />,
-    client: <Users className="h-4 w-4" />,
-    document: <FileText className="h-4 w-4" />,
-    event: <Calendar className="h-4 w-4" />,
-    general: <MessageSquare className="h-4 w-4" />
-  }[thread.contextType];
-
   return (
     <div className="flex h-full">
       {showContextBar && (
@@ -91,86 +83,90 @@ export function MessageThreadView({
           initial={{ width: 0, opacity: 0 }}
           animate={{ width: 280, opacity: 1 }}
           exit={{ width: 0, opacity: 0 }}
-          className="border-r p-4 space-y-4 overflow-y-auto"
+          className="border-r"
         >
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              {contextIcon}
-              <h3 className="font-medium">{thread.contextTitle}</h3>
-            </div>
+          <ScrollArea className="h-full">
+            <div className="p-4 space-y-4">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  {contextIcon}
+                  <h3 className="font-medium">{thread.contextTitle}</h3>
+                </div>
 
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Context Details</h4>
-              {thread.metadata.caseNumber && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Briefcase className="h-4 w-4 text-muted-foreground" />
-                  <span>Case #{thread.metadata.caseNumber}</span>
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Context Details</h4>
+                  {thread.metadata.caseNumber && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Briefcase className="h-4 w-4 text-muted-foreground" />
+                      <span>Case #{thread.metadata.caseNumber}</span>
+                    </div>
+                  )}
+                  {thread.metadata.clientName && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <span>{thread.metadata.clientName}</span>
+                    </div>
+                  )}
+                  {thread.metadata.documentTitle && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <FileText className="h-4 w-4 text-muted-foreground" />
+                      <span>{thread.metadata.documentTitle}</span>
+                    </div>
+                  )}
+                  {thread.metadata.eventTitle && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Calendar className="h-4 w-4 text-muted-foreground" />
+                      <span>{thread.metadata.eventTitle}</span>
+                    </div>
+                  )}
                 </div>
-              )}
-              {thread.metadata.clientName && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                  <span>{thread.metadata.clientName}</span>
-                </div>
-              )}
-              {thread.metadata.documentTitle && (
-                <div className="flex items-center gap-2 text-sm">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  <span>{thread.metadata.documentTitle}</span>
-                </div>
-              )}
-              {thread.metadata.eventTitle && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span>{thread.metadata.eventTitle}</span>
-                </div>
-              )}
-            </div>
 
-            <div className="space-y-2">
-              <h4 className="text-sm font-medium">Participants</h4>
-              <div className="flex flex-wrap gap-2">
-                {thread.participants.map((participant) => (
-                  <HoverCard key={participant.id}>
-                    <HoverCardTrigger>
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={participant.avatar} />
-                        <AvatarFallback>{participant.name[0]}</AvatarFallback>
-                      </Avatar>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-60">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-12 w-12">
-                          <AvatarImage src={participant.avatar} />
-                          <AvatarFallback>{participant.name[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h4 className="font-medium">{participant.name}</h4>
-                          <p className="text-sm text-muted-foreground">{participant.role}</p>
-                        </div>
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
-                ))}
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full">
-                  <PlusCircle className="h-4 w-4" />
-                </Button>
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium">Participants</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {thread.participants.map((participant) => (
+                      <HoverCard key={participant.id}>
+                        <HoverCardTrigger>
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={participant.avatar} />
+                            <AvatarFallback>{participant.name[0]}</AvatarFallback>
+                          </Avatar>
+                        </HoverCardTrigger>
+                        <HoverCardContent className="w-60">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-12 w-12">
+                              <AvatarImage src={participant.avatar} />
+                              <AvatarFallback>{participant.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <h4 className="font-medium">{participant.name}</h4>
+                              <p className="text-sm text-muted-foreground">{participant.role}</p>
+                            </div>
+                          </div>
+                        </HoverCardContent>
+                      </HoverCard>
+                    ))}
+                    <Button variant="outline" size="icon" className="h-8 w-8 rounded-full">
+                      <PlusCircle className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+
+                {thread.metadata.labels && (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Labels</h4>
+                    <div className="flex flex-wrap gap-1">
+                      {thread.metadata.labels.map((label) => (
+                        <Badge key={label} variant="secondary">
+                          {label}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-
-            {thread.metadata.labels && (
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Labels</h4>
-                <div className="flex flex-wrap gap-1">
-                  {thread.metadata.labels.map((label) => (
-                    <Badge key={label} variant="secondary">
-                      {label}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          </ScrollArea>
         </motion.div>
       )}
 
@@ -231,11 +227,8 @@ export function MessageThreadView({
           </div>
         </div>
 
-        <div 
-          ref={messagesContainerRef}
-          className="flex-1 overflow-y-auto p-4"
-        >
-          <div className="space-y-4">
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-4">
             {messages.map((message) => {
               const isCurrentUser = message.senderId === currentUserId;
               const sender = thread.participants.find(p => p.id === message.senderId);
@@ -414,7 +407,7 @@ export function MessageThreadView({
               );
             })}
           </div>
-        </div>
+        </ScrollArea>
 
         <AnimatePresence>
           {replyTo && (

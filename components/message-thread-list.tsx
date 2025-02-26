@@ -61,18 +61,17 @@ export function MessageThreadList({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 border-b">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search conversations..."
+            className="pl-8"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9"
           />
         </div>
-
-        <Tabs value={selectedContext} onValueChange={(v) => setSelectedContext(v as any)}>
+        <Tabs defaultValue="all" onValueChange={(value) => setSelectedContext(value as MessageContextType | 'all')}>
           <TabsList className="w-full">
             <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
             <TabsTrigger value="case" className="flex-1">Cases</TabsTrigger>
@@ -81,7 +80,7 @@ export function MessageThreadList({
           </TabsList>
         </Tabs>
       </div>
-
+      
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
           {Object.values(groupedThreads).map((threadGroup) => (

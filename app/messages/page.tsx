@@ -129,9 +129,8 @@ export default function MessagesPage() {
             defaultSize={messagePanelSizes[0]} 
             minSize={20} 
             maxSize={40}
-            className="overflow-hidden"
           >
-            <div className="h-full border-r overflow-y-auto">
+            <div className="h-full border-r">
               <MessageThreadList
                 threads={threads}
                 selectedThreadId={selectedThread?.id}
@@ -144,7 +143,6 @@ export default function MessagesPage() {
           
           <ResizablePanel 
             defaultSize={messagePanelSizes[1]}
-            className="overflow-hidden"
           >
             <div className="h-full">
               {selectedThread ? (

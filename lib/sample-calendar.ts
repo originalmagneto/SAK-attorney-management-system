@@ -27,15 +27,15 @@ export const sampleEvents: CalendarEvent[] = [
     start: new Date('2024-04-16T14:00:00'),
     end: new Date('2024-04-16T16:00:00'),
     metadata: {
-      caseNumber: 'PCT-2024-456',
-      courthouse: 'Federal Court',
-      courtroom: '405',
-      judge: 'Hon. Sarah Williams',
-      description: 'Patent infringement preliminary hearing',
+      caseNumber: 'IP-2024-789',
+      courthouse: 'Federal Circuit Court',
+      courtroom: '401',
+      judge: 'Hon. Patricia Lee',
+      description: 'Patent infringement hearing',
       client: 'Tech Corp',
-      priority: 'high',
+      priority: 'critical',
       participants: ['Sarah Johnson', 'David Chen'],
-      requiredDocuments: ['Patent Application', 'Expert Witness Report'],
+      requiredDocuments: ['Expert Testimony', 'Technical Documentation'],
     }
   },
 
@@ -55,6 +55,20 @@ export const sampleEvents: CalendarEvent[] = [
       agenda: ['Review Q1 Compliance Report', 'Discuss New Regulations', 'Planning Next Steps'],
     }
   },
+  {
+    id: 'meeting-2',
+    title: 'Green Energy Ltd - Strategy Meeting',
+    type: 'MEETING',
+    start: new Date('2024-04-18T11:00:00'),
+    end: new Date('2024-04-18T12:30:00'),
+    metadata: {
+      location: 'Conference Room A',
+      client: 'Green Energy Ltd',
+      priority: 'medium',
+      participants: ['Emily Brown', 'Michael Green', 'Sarah Johnson'],
+      agenda: ['Review regulatory compliance', 'Discuss expansion plans'],
+    }
+  },
 
   // Depositions
   {
@@ -72,6 +86,22 @@ export const sampleEvents: CalendarEvent[] = [
       priority: 'high',
       participants: ['Sarah Johnson', 'Court Reporter', 'Opposing Counsel'],
       requiredDocuments: ['Expert Report', 'Technical Specifications'],
+    }
+  },
+  {
+    id: 'depo-2',
+    title: 'Chen Deposition - Tech Corp Case',
+    type: 'DEPOSITION',
+    start: new Date('2024-04-17T10:00:00'),
+    end: new Date('2024-04-17T15:00:00'),
+    metadata: {
+      caseNumber: 'IP-2024-789',
+      location: 'Law Offices',
+      witness: 'Dr. James Chen',
+      client: 'Tech Corp',
+      priority: 'high',
+      participants: ['Sarah Johnson', 'Court Reporter', 'Opposing Counsel'],
+      requiredDocuments: ['Deposition Outline', 'Relevant Exhibits'],
     }
   },
 
@@ -107,6 +137,30 @@ export const sampleEvents: CalendarEvent[] = [
       requiredDocuments: ['Motion Draft', 'Supporting Evidence'],
     }
   },
+  {
+    id: 'deadline-2',
+    title: 'Tech Corp Patent Response Due',
+    type: 'DEADLINE',
+    start: new Date('2024-04-22T17:00:00'),
+    metadata: {
+      caseNumber: 'IP-2024-789',
+      client: 'Tech Corp',
+      priority: 'critical',
+      requiredDocuments: ['Response Brief', 'Supporting Documentation'],
+    }
+  },
+  {
+    id: 'deadline-3',
+    title: 'Smith Summary Judgment Motion Due',
+    type: 'DEADLINE',
+    start: new Date('2024-04-29T16:00:00'),
+    metadata: {
+      caseNumber: 'CV-2024-123',
+      client: 'Smith Industries',
+      priority: 'high',
+      requiredDocuments: ['Motion for Summary Judgment', 'Supporting Exhibits'],
+    }
+  },
 
   // Statute of Limitations
   {
@@ -123,6 +177,18 @@ export const sampleEvents: CalendarEvent[] = [
       assignedTo: 'Mark Wilson',
       jurisdiction: 'State Court',
       causeOfAction: 'Probate Claim',
+    }
+  },
+  {
+    id: 'sol-2',
+    title: 'SOL - MedTech Product Liability',
+    type: 'SOL',
+    start: new Date('2024-05-15T00:00:00'),
+    metadata: {
+      client: 'MedTech Innovations',
+      priority: 'critical',
+      description: 'Product liability claim deadline',
+      requiredAction: 'File Complaint',
     }
   },
 
@@ -144,6 +210,21 @@ export const sampleEvents: CalendarEvent[] = [
       requiredDocuments: ['Mediation Brief', 'Settlement Authority'],
     }
   },
+  {
+    id: 'mediation-2',
+    title: 'Rodriguez v. Global Logistics Mediation',
+    type: 'MEDIATION',
+    start: new Date('2024-04-19T09:30:00'),
+    end: new Date('2024-04-19T17:00:00'),
+    metadata: {
+      caseNumber: 'CV-2024-456',
+      mediator: 'Hon. Robert Thompson (Ret.)',
+      location: 'Mediation Center',
+      client: 'Global Logistics Inc',
+      priority: 'high',
+      participants: ['Marcus Rodriguez', 'Sarah Johnson', 'Opposing Counsel'],
+    }
+  },
 
   // Client Training
   {
@@ -162,6 +243,19 @@ export const sampleEvents: CalendarEvent[] = [
       materials: ['Training Slides', 'Compliance Checklist'],
     }
   },
+  {
+    id: 'training-2',
+    title: 'Legal Tech Training',
+    type: 'TRAINING',
+    start: new Date('2024-04-26T13:00:00'),
+    end: new Date('2024-04-26T16:00:00'),
+    metadata: {
+      instructor: 'Tech Solutions Inc',
+      location: 'Training Room B',
+      priority: 'medium',
+      topics: ['New Case Management System', 'Document Automation'],
+    }
+  },
 
   // Board Meetings
   {
@@ -177,6 +271,18 @@ export const sampleEvents: CalendarEvent[] = [
       priority: 'high',
       participants: ['Board Members', 'Sarah Johnson'],
       requiredDocuments: ['Board Resolution Drafts', 'Legal Updates Report'],
+    }
+  },
+  {
+    id: 'board-2',
+    title: 'Firm Partner Meeting',
+    type: 'BOARD_MEETING',
+    start: new Date('2024-04-25T15:00:00'),
+    end: new Date('2024-04-25T17:00:00'),
+    metadata: {
+      location: 'Main Conference Room',
+      priority: 'high',
+      agenda: ['Q2 Review', 'New Client Acquisitions', 'Technology Updates'],
     }
   }
 ];

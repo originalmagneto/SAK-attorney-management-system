@@ -1,15 +1,12 @@
 'use client';
-
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DocumentVersionControl } from '@/components/document-version-control';
-import { AIDocumentAnalyzer } from '@/components/ai-document-analyzer';
+import { cn } from '@/lib/utils';
 import {
   FileText,
   FolderTree,
@@ -25,107 +22,182 @@ import {
   ChevronRight,
   Settings,
   Grid2X2,
-  List
+  List,
+  File,
+  FileImage,
+  FileSpreadsheet
 } from 'lucide-react';
 import { useUIStore } from '@/lib/store';
+import { Document, Folder, ClientFolder } from '@/types/documents';
+import { sampleClientFolders, recentDocuments, starredDocuments } from '@/lib/sample-documents';
+import { format } from 'date-fns';
 
-interface ClientFolder {
-  id: string;
-  name: string;
-  avatar?: string;
-  totalDocuments: number;
-  recentlyModified: string;
-  folders: {
-    id: string;
-    name: string;
-    type: 'case' | 'category';
-    documents: number;
-    status?: string;
-  }[];
+function getFileIcon(type: Document['type']) {
+  switch (type) {
+    case 'pdf':
+      return <FileText className="h-8 w-8 text-red-500" />;
+    case 'docx':
+      return <File className="h-8 w-8 text-blue-500" />;
+    case 'xlsx':
+      return <FileSpreadsheet className="h-8 w-8 text-green-500" />;
+    case 'jpg':
+      return <FileImage className="h-8 w-8 text-purple-500" />;
+    default:
+      return <FileIcon className="h-8 w-8 text-gray-500" />;
+  }
 }
 
-const clientFolders: ClientFolder[] = [
-  {
-    id: 'client-1',
-    name: 'Tech Corp',
-    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=256&h=256&auto=format&fit=crop',
-    totalDocuments: 156,
-    recentlyModified: '2024-04-15',
-    folders: [
-      { id: 'case-1', name: 'Patent Litigation', type: 'case', documents: 45, status: 'active' },
-      { id: 'case-2', name: 'Corporate', type: 'case', documents: 32, status: 'active' },
-      { id: 'cat-1', name: 'Contracts', type: 'category', documents: 28 },
-      { id: 'cat-2', name: 'IP Portfolio', type: 'category', documents: 51 }
-    ]
-  },
-  {
-    id: 'client-2',
-    name: 'Smith Industries',
-    avatar: 'https://images.unsplash.com/photo-1523287562758-66c7fc58967f?q=80&w=256&h=256&auto=format&fit=crop',
-    totalDocuments: 89,
-    recentlyModified: '2024-04-14',
-    folders: [
-      { id: 'case-3', name: 'Employment Case', type: 'case', documents: 35, status: 'active' },
-      { id: 'cat-3', name: 'HR Documents', type: 'category', documents: 24 },
-      { id: 'cat-4', name: 'Compliance', type: 'category', documents: 30 }
-    ]
-  },
-  // Add more clients...
-];
+function formatFileSize(bytes: number) {
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let size = bytes;
+  let unitIndex = 0;
+  
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+  
+  return `${size.toFixed(1)} ${units[unitIndex]}`;
+}
 
-const recentDocuments = [
-  {
-    id: 'doc-1',
-    name: 'Patent Filing Brief.docx',
-    client: 'Tech Corp',
-    case: 'Patent Litigation',
-    modifiedAt: '2024-04-15T14:30:00',
-    modifiedBy: 'Sarah Johnson',
-    status: 'final'
-  },
-  {
-    id: 'doc-2',
-    name: 'Settlement Agreement Draft.docx',
-    client: 'Smith Industries',
-    case: 'Employment Case',
-    modifiedAt: '2024-04-15T11:20:00',
-    modifiedBy: 'Mark Wilson',
-    status: 'draft'
-  },
-  // Add more recent documents...
-];
+function DocumentCard({ document, viewMode }: { document: Document & { client?: string; case?: string }; viewMode: 'grid' | 'list' }) {
+  if (viewMode === 'list') {
+    return (
+      <div className="flex items-center gap-4 p-4 hover:bg-accent rounded-lg group">
+        {getFileIcon(document.type)}
+        <div className="flex-1 min-w-0">
+          <h4 className="font-medium truncate">{document.name}</h4>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            {document.client && <span>{document.client}</span>}
+            {document.case && (
+              <>
+                <span>•</span>
+                <span>{document.case}</span>
+              </>
+            )}
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-sm">{format(new Date(document.modifiedAt), 'MMM d, yyyy')}</div>
+          <div className="text-xs text-muted-foreground">{formatFileSize(document.size)}</div>
+        </div>
+        <Badge variant={document.status === 'final' ? 'default' : 'secondary'}>
+          {document.status}
+        </Badge>
+      </div>
+    );
+  }
 
-const starredDocuments = [
-  {
-    id: 'doc-3',
-    name: 'Master Services Agreement.docx',
-    client: 'Tech Corp',
-    case: 'Corporate',
-    modifiedAt: '2024-04-14T16:45:00',
-    modifiedBy: 'Sarah Johnson',
-    status: 'final'
-  },
-  // Add more starred documents...
-];
+  return (
+    <Card className="p-4 hover:shadow-lg transition-shadow group">
+      <div className="flex flex-col items-center text-center gap-4">
+        {getFileIcon(document.type)}
+        <div className="space-y-1 w-full">
+          <h4 className="font-medium truncate">{document.name}</h4>
+          {(document.client || document.case) && (
+            <div className="text-sm text-muted-foreground truncate">
+              {document.client}
+              {document.case && ` • ${document.case}`}
+            </div>
+          )}
+          <div className="text-xs text-muted-foreground">
+            {formatFileSize(document.size)}
+          </div>
+        </div>
+      </div>
+      <div className="mt-4 pt-4 border-t flex items-center justify-between">
+        <span className="text-xs text-muted-foreground">
+          {format(new Date(document.modifiedAt), 'MMM d, yyyy')}
+        </span>
+        <Badge variant={document.status === 'final' ? 'default' : 'secondary'}>
+          {document.status}
+        </Badge>
+      </div>
+    </Card>
+  );
+}
+
+function FolderItem({ folder, level = 0, selectedId, onSelect }: {
+  folder: Folder;
+  level?: number;
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+}) {
+  return (
+    <>
+      <Button
+        variant={selectedId === folder.id ? 'secondary' : 'ghost'}
+        className={cn(
+          "w-full justify-start",
+          level > 0 && `pl-${4 + level * 4}`
+        )}
+        onClick={() => onSelect(folder.id)}
+      >
+        {folder.type === 'case' ? (
+          <Briefcase className="h-4 w-4 mr-2" />
+        ) : (
+          <FolderTree className="h-4 w-4 mr-2" />
+        )}
+        <span className="truncate">{folder.name}</span>
+        {folder.status && (
+          <Badge
+            variant={folder.status === 'active' ? 'default' : 'secondary'}
+            className="ml-auto"
+          >
+            {folder.status}
+          </Badge>
+        )}
+      </Button>
+      
+      {folder.subFolders?.map(subFolder => (
+        <FolderItem
+          key={subFolder.id}
+          folder={subFolder}
+          level={level + 1}
+          selectedId={selectedId}
+          onSelect={onSelect}
+        />
+      ))}
+    </>
+  );
+}
+
+function findFolderAndDocuments(clientFolders: ClientFolder[], folderId: string): { folder: Folder; documents: Document[]; breadcrumb: string[] } | null {
+  let result: { folder: Folder; documents: Document[]; breadcrumb: string[] } | null = null;
+
+  const searchFolder = (folder: Folder, path: string[] = []): boolean => {
+    if (folder.id === folderId) {
+      result = {
+        folder,
+        documents: folder.documents,
+        breadcrumb: [...path, folder.name]
+      };
+      return true;
+    }
+
+    return folder.subFolders?.some(subFolder => 
+      searchFolder(subFolder, [...path, folder.name])
+    ) || false;
+  };
+
+  clientFolders.some(client => 
+    client.folders.some(folder => searchFolder(folder, [client.name]))
+  );
+
+  return result;
+}
 
 export default function DocumentsPage() {
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  
-  const { lastVisitedClient, setLastVisitedClient } = useUIStore();
 
-  // Initialize with last visited client if available
-  useState(() => {
-    if (lastVisitedClient) {
-      setSelectedClient(lastVisitedClient);
-    }
-  });
+  const client = selectedClient ? sampleClientFolders.find(c => c.id === selectedClient) : null;
+  const folderData = selectedFolder ? findFolderAndDocuments(sampleClientFolders, selectedFolder) : null;
 
   const handleClientSelect = (clientId: string) => {
     setSelectedClient(clientId);
-    setLastVisitedClient(clientId);
     setSelectedFolder(null);
   };
 
@@ -141,11 +213,11 @@ export default function DocumentsPage() {
             </p>
           </div>
           <div className="flex items-center gap-4">
-            <Button onClick={() => {}}>
+            <Button>
               <Upload className="h-4 w-4 mr-2" />
               Upload Files
             </Button>
-            <Button variant="outline" onClick={() => {}}>
+            <Button variant="outline">
               <Settings className="h-4 w-4 mr-2" />
               Settings
             </Button>
@@ -187,11 +259,12 @@ export default function DocumentsPage() {
                 </div>
 
                 <TabsContent value="recent" className="m-0">
-                  <div className={`grid gap-4 ${
+                  <div className={cn(
+                    "grid gap-4",
                     viewMode === 'grid' 
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                       : 'grid-cols-1'
-                  }`}>
+                  )}>
                     {recentDocuments.map(doc => (
                       <DocumentCard
                         key={doc.id}
@@ -203,11 +276,12 @@ export default function DocumentsPage() {
                 </TabsContent>
 
                 <TabsContent value="starred" className="m-0">
-                  <div className={`grid gap-4 ${
+                  <div className={cn(
+                    "grid gap-4",
                     viewMode === 'grid' 
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                       : 'grid-cols-1'
-                  }`}>
+                  )}>
                     {starredDocuments.map(doc => (
                       <DocumentCard
                         key={doc.id}
@@ -222,7 +296,7 @@ export default function DocumentsPage() {
 
             {/* Client Folders */}
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {clientFolders.map(client => (
+              {sampleClientFolders.map(client => (
                 <Card
                   key={client.id}
                   className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
@@ -250,7 +324,7 @@ export default function DocumentsPage() {
                     </div>
                     <ChevronRight className="h-5 w-5 text-muted-foreground" />
                   </div>
-
+                  
                   <div className="mt-4 space-y-2">
                     {client.folders.slice(0, 2).map(folder => (
                       <div
@@ -282,7 +356,7 @@ export default function DocumentsPage() {
 
                   <div className="mt-4 pt-4 border-t">
                     <p className="text-xs text-muted-foreground">
-                      Last modified {new Date(client.recentlyModified).toLocaleDateString()}
+                      Last modified {format(new Date(client.recentlyModified), 'MMM d, yyyy')}
                     </p>
                   </div>
                 </Card>
@@ -290,171 +364,137 @@ export default function DocumentsPage() {
             </div>
           </div>
         ) : (
-          <ClientView
-            client={clientFolders.find(c => c.id === selectedClient)!}
-            selectedFolder={selectedFolder}
-            onFolderSelect={setSelectedFolder}
-            onBack={() => {
+          <div className="space-y-6">
+            <Button variant="ghost" onClick={() => {
               setSelectedClient(null);
               setSelectedFolder(null);
-            }}
-          />
+            }}>
+              <ChevronRight className="h-4 w-4 mr-2 rotate-180" />
+              Back to Clients
+            </Button>
+
+            <div className="flex items-start gap-6">
+              {/* Folders Sidebar */}
+              <Card className="w-[300px] p-4">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+                    {client?.avatar ? (
+                      <img
+                        src={client.avatar}
+                        alt={client.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Users className="h-6 w-6 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="font-semibold">{client?.name}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {client?.totalDocuments} documents
+                    </p>
+                  </div>
+                </div>
+
+                <ScrollArea className="h-[calc(100vh-15rem)]">
+                  <div className="space-y-1">
+                    {client?.folders.map(folder => (
+                      <FolderItem
+                        key={folder.id}
+                        folder={folder}
+                        selectedId={selectedFolder}
+                        onSelect={setSelectedFolder}
+                      />
+                    ))}
+                  </div>
+                </ScrollArea>
+              </Card>
+
+              {/* Main Content */}
+              <Card className="flex-1 p-6">
+                <div className="flex flex-col gap-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      {folderData?.breadcrumb && (
+                        <div className="text-sm text-muted-foreground">
+                          {folderData.breadcrumb.join(' / ')}
+                        </div>
+                      )}
+                      <h3 className="text-lg font-semibold">
+                        {folderData?.folder.name || 'All Documents'}
+                      </h3>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search documents..."
+                          className="pl-9 w-[300px]"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
+                          size="icon"
+                          onClick={() => setViewMode('grid')}
+                        >
+                          <Grid2X2 className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant={viewMode === 'list' ? 'secondary' : 'ghost'}
+                          size="icon"
+                          onClick={() => setViewMode('list')}
+                        >
+                          <List className="h-4 w-4" />
+                        </Button>
+                      </div>
+
+                      <Button variant="outline">
+                        <History className="h-4 w-4 mr-2" />
+                        Version History
+                      </Button>
+
+                      <Button>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Document Grid/List */}
+                  {folderData && (
+                    <div className={cn(
+                      "grid gap-4",
+                      viewMode === 'grid' 
+                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                        : 'grid-cols-1'
+                    )}>
+                      {folderData.documents
+                        .filter(doc => 
+                          doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          doc.tags?.some(tag => 
+                            tag.toLowerCase().includes(searchTerm.toLowerCase())
+                          )
+                        )
+                        .map(doc => (
+                          <DocumentCard
+                            key={doc.id}
+                            document={doc}
+                            viewMode={viewMode}
+                          />
+                        ))
+                      }
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </div>
+          </div>
         )}
-      </div>
-    </div>
-  );
-}
-
-function DocumentCard({ document, viewMode }: { document: any; viewMode: 'grid' | 'list' }) {
-  if (viewMode === 'list') {
-    return (
-      <div className="flex items-center gap-4 p-4 hover:bg-accent rounded-lg">
-        <div className="p-2 rounded-lg bg-primary/10">
-          <FileText className="h-4 w-4 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="font-medium truncate">{document.name}</h4>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>{document.client}</span>
-            <span>•</span>
-            <span>{document.case}</span>
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="text-sm">{new Date(document.modifiedAt).toLocaleDateString()}</div>
-          <div className="text-xs text-muted-foreground">{document.modifiedBy}</div>
-        </div>
-        <Badge variant={document.status === 'final' ? 'default' : 'secondary'}>
-          {document.status}
-        </Badge>
-      </div>
-    );
-  }
-
-  return (
-    <Card className="p-4 hover:shadow-lg transition-shadow">
-      <div className="flex items-start gap-3">
-        <div className="p-2 rounded-lg bg-primary/10">
-          <FileText className="h-4 w-4 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="font-medium truncate">{document.name}</h4>
-          <div className="mt-1 text-sm text-muted-foreground truncate">
-            {document.client} • {document.case}
-          </div>
-          <div className="mt-2 flex items-center gap-2 text-xs text-muted-foreground">
-            <Clock className="h-3 w-3" />
-            <span>{new Date(document.modifiedAt).toLocaleDateString()}</span>
-          </div>
-        </div>
-      </div>
-      <div className="mt-4 pt-4 border-t flex items-center justify-between">
-        <span className="text-xs text-muted-foreground">{document.modifiedBy}</span>
-        <Badge variant={document.status === 'final' ? 'default' : 'secondary'}>
-          {document.status}
-        </Badge>
-      </div>
-    </Card>
-  );
-}
-
-function ClientView({ 
-  client, 
-  selectedFolder,
-  onFolderSelect,
-  onBack 
-}: { 
-  client: ClientFolder;
-  selectedFolder: string | null;
-  onFolderSelect: (id: string) => void;
-  onBack: () => void;
-}) {
-  return (
-    <div className="space-y-6">
-      <Button variant="ghost" onClick={onBack}>
-        <ChevronRight className="h-4 w-4 mr-2 rotate-180" />
-        Back to Clients
-      </Button>
-
-      <div className="flex items-start gap-6">
-        {/* Folders Sidebar */}
-        <Card className="w-[300px] p-4">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
-              {client.avatar ? (
-                <img
-                  src={client.avatar}
-                  alt={client.name}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <Users className="h-6 w-6 text-primary" />
-              )}
-            </div>
-            <div>
-              <h2 className="font-semibold">{client.name}</h2>
-              <p className="text-sm text-muted-foreground">
-                {client.totalDocuments} documents
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            {client.folders.map(folder => (
-              <Button
-                key={folder.id}
-                variant={selectedFolder === folder.id ? 'secondary' : 'ghost'}
-                className="w-full justify-start"
-                onClick={() => onFolderSelect(folder.id)}
-              >
-                {folder.type === 'case' ? (
-                  <Briefcase className="h-4 w-4 mr-2" />
-                ) : (
-                  <FolderTree className="h-4 w-4 mr-2" />
-                )}
-                <span className="truncate">{folder.name}</span>
-                {folder.status && (
-                  <Badge
-                    variant={folder.status === 'active' ? 'default' : 'secondary'}
-                    className="ml-auto"
-                  >
-                    {folder.status}
-                  </Badge>
-                )}
-              </Button>
-            ))}
-          </div>
-        </Card>
-
-        {/* Main Content */}
-        <Card className="flex-1 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold">
-              {selectedFolder 
-                ? client.folders.find(f => f.id === selectedFolder)?.name 
-                : 'All Documents'}
-            </h3>
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search documents..."
-                  className="pl-9 w-[300px]"
-                />
-              </div>
-              <Button variant="outline">
-                <History className="h-4 w-4 mr-2" />
-                Version History
-              </Button>
-              <Button>
-                <Upload className="h-4 w-4 mr-2" />
-                Upload
-              </Button>
-            </div>
-          </div>
-
-          {/* Document grid/list will go here */}
-        </Card>
       </div>
     </div>
   );

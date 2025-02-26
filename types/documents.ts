@@ -6,29 +6,32 @@ export type FolderType = 'case' | 'category';
 export interface Document {
   id: string;
   name: string;
-  type: string; // File extension or MIME type
+  type: 'pdf' | 'docx' | 'xlsx' | 'jpg' | 'txt';
   size: number;
-  createdAt: Date;
-  modifiedAt: Date;
-  createdBy: string;
+  createdAt: string;
+  modifiedAt: string;
   modifiedBy: string;
-  clientId: string;
-  clientName: string;
-  caseId?: string;
-  caseName?: string;
-  category: DocumentCategory;
-  status: DocumentStatus;
-  accessLevel: AccessLevel;
-  version: string;
-  metadata: {
-    description?: string;
-    tags?: string[];
-    court?: string;
-    parties?: string[];
-    dueDate?: Date;
-    relatedDocuments?: string[];
-    customFields?: Record<string, any>;
-  };
+  status: 'draft' | 'final' | 'review' | 'archived';
+  version: number;
+  tags?: string[];
+}
+
+export interface Folder {
+  id: string;
+  name: string;
+  type: 'case' | 'category';
+  status?: string;
+  documents: Document[];
+  subFolders?: Folder[];
+}
+
+export interface ClientFolder {
+  id: string;
+  name: string;
+  avatar?: string;
+  totalDocuments: number;
+  recentlyModified: string;
+  folders: Folder[];
 }
 
 export interface DocumentFolder {
