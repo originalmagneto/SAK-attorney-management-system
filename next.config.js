@@ -6,7 +6,8 @@ const nextConfig = {
     unoptimized: true,  // Required for static exports
     domains: ['example.com'], // Add domains for external images
   },
-  output: 'export', // Ensures static build for Netlify
+  // Remove static export since we need API routes
+  // output: 'export',
   // Prevent errors with CSS modules
   webpack: (config) => {
     config.module.rules.push({
