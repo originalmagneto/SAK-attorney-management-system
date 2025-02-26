@@ -5,6 +5,9 @@ import { JWTPayload, UserRole } from '@/types/auth';
 import { AppError, ErrorCode } from '@/types/errors';
 import { createErrorResponse } from '@/lib/api-response';
 
+// Set middleware to use Node.js runtime
+export const runtime = 'nodejs';
+
 // Define user roles and their hierarchy
 const roleHierarchy: Record<UserRole, string[]> = {
   OWNER: ['OWNER', 'PARTNER', 'ASSOCIATE', 'STAFF'],

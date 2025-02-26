@@ -20,6 +20,8 @@ import {
   AlertTriangle,
   CheckCircle2,
   AlertCircle,
+  Settings,
+  MapPin
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
