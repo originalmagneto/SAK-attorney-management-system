@@ -78,7 +78,7 @@ export default function MessagesPage() {
         });
       });
     }
-  }, [threads.length, createThread, sendMessage]);
+  }, []);
 
   useEffect(() => {
     // Hydrate UI store

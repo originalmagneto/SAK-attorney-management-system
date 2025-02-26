@@ -30,7 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-import { eventTypes } from '@/app/calendar/page';
+import { EventType } from '@/types/calendar';
 import {
   Clock,
   MapPin,
@@ -41,6 +41,18 @@ import {
   FileText,
   Bell,
 } from 'lucide-react';
+
+const eventTypes = {
+  HEARING: { label: 'Hearing', icon: Calendar },
+  MEETING: { label: 'Meeting', icon: Users },
+  DEPOSITION: { label: 'Deposition', icon: FileText },
+  INTERNAL: { label: 'Internal', icon: Lock },
+  DEADLINE: { label: 'Deadline', icon: AlertTriangle },
+  SOL: { label: 'SOL Deadline', icon: AlertTriangle },
+  MEDIATION: { label: 'Mediation', icon: Users },
+  TRAINING: { label: 'Training', icon: Users },
+  BOARD_MEETING: { label: 'Board Meeting', icon: Users },
+};
 
 const legalEventSchema = z.object({
   title: z.string().min(2, { message: "Title is required" }),

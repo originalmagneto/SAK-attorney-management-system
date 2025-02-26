@@ -19,7 +19,6 @@ import {
   Tag
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Image from 'next/image';
 
 interface MessageThreadListProps {
   threads: MessageThread[];
@@ -101,12 +100,10 @@ export function MessageThreadList({
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
                       {thread.participants[0]?.avatar ? (
-                        <Image
+                        <img
                           src={thread.participants[0].avatar}
                           alt={thread.participants[0].name}
-                          fill
-                          className="rounded-full object-cover"
-                          sizes="40px"
+                          className="w-10 h-10 rounded-full"
                         />
                       ) : (
                         <User className="h-5 w-5 text-primary" />

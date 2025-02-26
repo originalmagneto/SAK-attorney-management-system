@@ -318,38 +318,40 @@ export function DocumentVersionControl({
         </Table>
       </Card>
 
-      {version?.reviewers && (
-        <Card className="p-4">
-          <h4 className="font-medium mb-4">Review History</h4>
-          <div className="space-y-4">
-            {version.reviewers.map((reviewer, index) => (
-              <div key={index} className="flex items-start gap-4 p-3 rounded-lg border">
-                <Avatar>
-                  <AvatarImage src={reviewer.avatar} />
-                  <AvatarFallback>{reviewer.name[0]}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium">{reviewer.name}</div>
-                    <Badge variant={
-                      reviewer.status === 'approved' ? 'default' :
-                      reviewer.status === 'rejected' ? 'destructive' :
-                      'secondary'
-                    }>
-                      {reviewer.status}
-                    </Badge>
+      {versions.map((version) => (
+        version.reviewers && (
+          <Card className="p-4" key={version.id}>
+            <h4 className="font-medium mb-4">Review History</h4>
+            <div className="space-y-4">
+              {version.reviewers.map((reviewer, index) => (
+                <div key={index} className="flex items-start gap-4 p-3 rounded-lg border">
+                  <Avatar>
+                    <AvatarImage src={reviewer.avatar} />
+                    <AvatarFallback>{reviewer.name[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="font-medium">{reviewer.name}</div>
+                      <Badge variant={
+                        reviewer.status === 'approved' ? 'default' :
+                        reviewer.status === 'rejected' ? 'destructive' :
+                        'secondary'
+                      }>
+                        {reviewer.status}
+                      </Badge>
+                    </div>
+                    {reviewer.comments && (
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {reviewer.comments}
+                      </p>
+                    )}
                   </div>
-                  {reviewer.comments && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {reviewer.comments}
-                    </p>
-                  )}
                 </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
+              ))}
+            </div>
+          </Card>
+        )
+      ))}
     </div>
   );
 }
