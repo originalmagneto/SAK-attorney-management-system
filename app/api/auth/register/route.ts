@@ -9,6 +9,8 @@ import { AppError, ErrorCode } from '@/types/errors';
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response';
 import { rateLimit } from '@/lib/rate-limit';
 
+export const runtime = 'nodejs';
+
 const registerSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(8, 'Password must be at least 8 characters'),

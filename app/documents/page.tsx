@@ -43,6 +43,7 @@ import { useUIStore } from '@/lib/store';
 import { Document, Folder, ClientFolder } from '@/types/documents';
 import { sampleClientFolders, recentDocuments, starredDocuments } from '@/lib/sample-documents';
 import { format } from 'date-fns';
+import Image from 'next/image';
 
 function getFileIcon(type: Document['type']) {
   switch (type) {
@@ -372,9 +373,11 @@ export default function DocumentsPage() {
                       <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
                           {client.avatar ? (
-                            <img
+                            <Image
                               src={client.avatar}
                               alt={client.name}
+                              width={40}
+                              height={40}
                               className="h-full w-full object-cover"
                             />
                           ) : (
@@ -446,9 +449,11 @@ export default function DocumentsPage() {
                 <div className="flex items-center gap-4 mb-6">
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
                     {client?.avatar ? (
-                      <img
+                      <Image
                         src={client.avatar}
                         alt={client.name}
+                        width={48}
+                        height={48}
                         className="h-full w-full object-cover"
                       />
                     ) : (

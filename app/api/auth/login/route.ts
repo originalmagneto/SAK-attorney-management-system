@@ -10,6 +10,8 @@ import { createSuccessResponse, createErrorResponse } from '@/lib/api-response';
 import { rateLimit } from '@/lib/rate-limit';
 import { setAuthCookie } from '@/lib/cookies';
 
+export const runtime = 'nodejs';
+
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(1, 'Password is required'),

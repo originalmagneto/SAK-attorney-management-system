@@ -185,7 +185,7 @@ export function CaseChat({ messages, onSendMessage }: CaseChatProps) {
             <Brain className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium">Suggested Actions</span>
           </div>
-          <ScrollArea className="w-full" orientation="horizontal">
+          <ScrollArea className="w-full">
             <div className="flex gap-2">
               {aiSuggestions.map((suggestion, index) => (
                 <Button
