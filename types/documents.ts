@@ -1,25 +1,30 @@
+import { LucideIcon } from 'lucide-react';
+
+export type DocumentType = 'pdf' | 'docx' | 'xlsx' | 'jpg';
 export type DocumentStatus = 'draft' | 'review' | 'final' | 'archived';
 export type DocumentCategory = 'contract' | 'pleading' | 'correspondence' | 'evidence' | 'research' | 'internal' | 'corporate' | 'regulatory';
 export type AccessLevel = 'public' | 'internal' | 'confidential' | 'privileged';
-export type FolderType = 'case' | 'category';
+export type FolderType = 'case' | 'category' | 'general';
 
 export interface Document {
   id: string;
   name: string;
-  type: 'pdf' | 'docx' | 'xlsx' | 'jpg' | 'txt';
+  type: DocumentType;
   size: number;
   createdAt: string;
   modifiedAt: string;
   modifiedBy: string;
-  status: 'draft' | 'final' | 'review' | 'archived';
+  status: DocumentStatus;
   version: number;
   tags?: string[];
+  client?: string;
+  case?: string;
 }
 
 export interface Folder {
   id: string;
   name: string;
-  type: 'case' | 'category';
+  type: FolderType;
   status?: string;
   documents: Document[];
   subFolders?: Folder[];
@@ -82,4 +87,10 @@ export interface DocumentVersion {
     approvedBy?: string;
     customFields?: Record<string, any>;
   };
+}
+
+export interface DocumentSortOption {
+  label: string;
+  value: 'name' | 'date' | 'size';
+  icon: LucideIcon;
 }

@@ -145,7 +145,7 @@ function CalendarDayCell({ date, events }: { date: Date; events: CalendarEvent[]
         {format(date, 'd')}
       </div>
       <div className="space-y-1">
-        {dayEvents.map(event => (
+        {dayEvents.slice(0, 3).map(event => (
           <div
             key={event.id}
             className={cn(
@@ -192,11 +192,17 @@ export default function CalendarPage() {
   }, [date]);
 
   const goToPreviousMonth = () => {
-    setDate(d => addDays(d, -30));
+    setDate(d => {
+      const prevMonth = new Date(d.getFullYear(), d.getMonth() - 1, 1);
+      return prevMonth;
+    });
   };
 
   const goToNextMonth = () => {
-    setDate(d => addDays(d, 30));
+    setDate(d => {
+      const nextMonth = new Date(d.getFullYear(), d.getMonth() + 1, 1);
+      return nextMonth;
+    });
   };
 
   const priorityEvents = useMemo(() => 
@@ -322,28 +328,170 @@ export default function CalendarPage() {
           </div>
         </div>
 
-        {/* Calendar Grid - Month View */}
-        <div className="rounded-lg border bg-card">
-          {/* Calendar Headers */}
-          <div className="grid grid-cols-7 gap-px border-b bg-muted">
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-              <div key={day} className="p-2 text-center text-sm font-medium">
-                {day}
+        <Tabs defaultValue="month" value={view} className="w-full">
+          <TabsContent value="month" className="mt-0">
+            <div className="rounded-lg border bg-card">
+              {/* Calendar Headers */}
+              <div className="grid grid-cols-7 gap-px border-b bg-muted">
+                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+                  <div key={day} className="p-2 text-center text-sm font-medium">
+                    {day}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Calendar Days Grid */}
-          <div className="grid grid-cols-7 gap-px bg-muted p-px">
-            {monthDays.map((day) => (
-              <CalendarDayCell
-                key={day.toISOString()}
-                date={day}
-                events={filteredEvents}
-              />
-            ))}
-          </div>
-        </div>
+              {/* Calendar Days Grid */}
+              <div className="grid grid-cols-7 gap-px bg-muted p-px">
+                {monthDays.map((day) => (
+                  <CalendarDayCell
+                    key={day.toISOString()}
+                    date={day}
+                    events={filteredEvents}
+                  />
+                ))}
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="week" className="mt-0">
+            <div className="rounded-lg border bg-card">
+              {/* Week View Headers */}
+              <div className="grid grid-cols-7 gap-px border-b bg-muted">
+                {eachDayOfInterval({
+                  start: startOfWeek(date),
+                  end: endOfWeek(date)
+                }).map((day) => (
+                  <div key={day.toISOString()} className="p-2 text-center">
+                    <div className="text-sm font-medium">
+                      {format(day, 'EEE')}
+                    </div>
+                    <div className={cn(
+                      "text-sm",
+                      isToday(day) && "bg-primary text-primary-foreground rounded-md"
+                    )}>
+                      {format(day, 'd')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Week View Time Grid */}
+              <div className="grid grid-cols-[auto,1fr] divide-x divide-border">
+                <div className="w-20">
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <div key={i} className="text-sm text-muted-foreground text-right pr-4 py-4">
+                      {format(new Date().setHours(i, 0), 'h a')}
+                    </div>
+                  ))}
+                </div>
+                <div className="grid grid-cols-7 divide-x divide-border">
+                  {eachDayOfInterval({
+                    start: startOfWeek(date),
+                    end: endOfWeek(date)
+                  }).map((day) => (
+                    <div key={day.toISOString()} className="relative min-h-[1440px]">
+                      {filteredEvents
+                        .filter(event => isSameDay(new Date(event.start), day))
+                        .map(event => {
+                          const start = new Date(event.start);
+                          const end = event.end ? new Date(event.end) : addDays(start, 1);
+                          const top = (start.getHours() * 60 + start.getMinutes()) * 2;
+                          const height = ((end.getHours() - start.getHours()) * 60 + (end.getMinutes() - start.getMinutes())) * 2;
+                          
+                          return (
+                            <div
+                              key={event.id}
+                              className={cn(
+                                "absolute left-1 right-1 rounded-md p-1 text-xs",
+                                getEventColor(event.type),
+                                "text-white"
+                              )}
+                              style={{
+                                top: `${top}px`,
+                                height: `${height}px`,
+                                minHeight: '20px'
+                              }}
+                            >
+                              <div className="font-medium truncate">{event.title}</div>
+                              <div className="text-[10px] opacity-90">
+                                {format(start, 'h:mm a')}
+                              </div>
+                            </div>
+                          );
+                        })}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="day" className="mt-0">
+            <div className="rounded-lg border bg-card">
+              {/* Day View Header */}
+              <div className="p-4 text-center border-b">
+                <div className="text-lg font-semibold">
+                  {format(date, 'EEEE')}
+                </div>
+                <div className={cn(
+                  "text-sm",
+                  isToday(date) && "text-primary font-medium"
+                )}>
+                  {format(date, 'MMMM d, yyyy')}
+                </div>
+              </div>
+
+              {/* Day View Time Grid */}
+              <div className="grid grid-cols-[auto,1fr] divide-x divide-border">
+                <div className="w-20">
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <div key={i} className="text-sm text-muted-foreground text-right pr-4 py-4">
+                      {format(new Date().setHours(i, 0), 'h a')}
+                    </div>
+                  ))}
+                </div>
+                <div className="relative min-h-[1440px]">
+                  {filteredEvents
+                    .filter(event => isSameDay(new Date(event.start), date))
+                    .map(event => {
+                      const start = new Date(event.start);
+                      const end = event.end ? new Date(event.end) : addDays(start, 1);
+                      const top = (start.getHours() * 60 + start.getMinutes()) * 2;
+                      const height = ((end.getHours() - start.getHours()) * 60 + (end.getMinutes() - start.getMinutes())) * 2;
+                      
+                      return (
+                        <div
+                          key={event.id}
+                          className={cn(
+                            "absolute left-4 right-4 rounded-md p-2",
+                            getEventColor(event.type),
+                            "text-white"
+                          )}
+                          style={{
+                            top: `${top}px`,
+                            height: `${height}px`,
+                            minHeight: '30px'
+                          }}
+                        >
+                          <div className="font-medium">{event.title}</div>
+                          <div className="text-sm opacity-90">
+                            {format(start, 'h:mm a')}
+                            {end && ` - ${format(end, 'h:mm a')}`}
+                          </div>
+                          {event.metadata.location && (
+                            <div className="text-sm mt-1 opacity-90 flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {event.metadata.location}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Events List */}
         <Card>

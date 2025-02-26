@@ -1,288 +1,595 @@
 import { CalendarEvent, EventType } from '@/types/calendar';
 
 export const sampleEvents: CalendarEvent[] = [
-  // Court Hearings
+  // February 1, 2024 (Thursday)
   {
-    id: 'hearing-1',
-    title: 'Smith v. Johnson - Status Conference',
-    type: 'HEARING',
-    start: new Date('2024-04-15T09:00:00'),
-    end: new Date('2024-04-15T10:30:00'),
-    metadata: {
-      caseNumber: 'CV-2024-123',
-      courthouse: 'District Court',
-      courtroom: '302',
-      judge: 'Hon. Michael Davis',
-      description: 'Status conference for employment discrimination case',
-      client: 'Smith Industries',
-      priority: 'high',
-      participants: ['Sarah Johnson', 'Mark Wilson'],
-      requiredDocuments: ['Pre-hearing Brief', 'Latest Settlement Offer'],
-    }
-  },
-  {
-    id: 'hearing-2',
-    title: 'Tech Corp Patent Hearing',
-    type: 'HEARING',
-    start: new Date('2024-04-16T14:00:00'),
-    end: new Date('2024-04-16T16:00:00'),
-    metadata: {
-      caseNumber: 'IP-2024-789',
-      courthouse: 'Federal Circuit Court',
-      courtroom: '401',
-      judge: 'Hon. Patricia Lee',
-      description: 'Patent infringement hearing',
-      client: 'Tech Corp',
-      priority: 'critical',
-      participants: ['Sarah Johnson', 'David Chen'],
-      requiredDocuments: ['Expert Testimony', 'Technical Documentation'],
-    }
-  },
-
-  // Client Meetings
-  {
-    id: 'meeting-1',
-    title: 'Client Meeting - Emily Brown (Green Energy)',
-    type: 'MEETING',
-    start: new Date('2024-04-15T11:00:00'),
-    end: new Date('2024-04-15T12:00:00'),
-    metadata: {
-      location: 'Conference Room A',
-      client: 'Green Energy Ltd',
-      description: 'Review environmental compliance documentation',
-      priority: 'medium',
-      participants: ['Emily Brown', 'Michael Green', 'Sarah Johnson'],
-      agenda: ['Review Q1 Compliance Report', 'Discuss New Regulations', 'Planning Next Steps'],
-    }
-  },
-  {
-    id: 'meeting-2',
-    title: 'Green Energy Ltd - Strategy Meeting',
-    type: 'MEETING',
-    start: new Date('2024-04-18T11:00:00'),
-    end: new Date('2024-04-18T12:30:00'),
-    metadata: {
-      location: 'Conference Room A',
-      client: 'Green Energy Ltd',
-      priority: 'medium',
-      participants: ['Emily Brown', 'Michael Green', 'Sarah Johnson'],
-      agenda: ['Review regulatory compliance', 'Discuss expansion plans'],
-    }
-  },
-
-  // Depositions
-  {
-    id: 'depo-1',
-    title: 'Expert Witness Deposition - Tech Corp Case',
-    type: 'DEPOSITION',
-    start: new Date('2024-04-17T10:00:00'),
-    end: new Date('2024-04-17T14:00:00'),
-    metadata: {
-      caseNumber: 'PCT-2024-456',
-      location: 'Law Office - Deposition Room',
-      witness: 'Dr. Robert Anderson',
-      client: 'Tech Corp',
-      description: 'Expert witness deposition on technical aspects',
-      priority: 'high',
-      participants: ['Sarah Johnson', 'Court Reporter', 'Opposing Counsel'],
-      requiredDocuments: ['Expert Report', 'Technical Specifications'],
-    }
-  },
-  {
-    id: 'depo-2',
-    title: 'Chen Deposition - Tech Corp Case',
-    type: 'DEPOSITION',
-    start: new Date('2024-04-17T10:00:00'),
-    end: new Date('2024-04-17T15:00:00'),
-    metadata: {
-      caseNumber: 'IP-2024-789',
-      location: 'Law Offices',
-      witness: 'Dr. James Chen',
-      client: 'Tech Corp',
-      priority: 'high',
-      participants: ['Sarah Johnson', 'Court Reporter', 'Opposing Counsel'],
-      requiredDocuments: ['Deposition Outline', 'Relevant Exhibits'],
-    }
-  },
-
-  // Internal Meetings
-  {
-    id: 'internal-1',
-    title: 'Weekly Strategy Meeting',
+    id: 'feb-1-1',
+    title: 'Team Status Meeting',
     type: 'INTERNAL',
-    start: new Date('2024-04-15T15:00:00'),
-    end: new Date('2024-04-15T16:00:00'),
+    start: '2024-02-01T09:00',
+    end: '2024-02-01T10:00',
+    metadata: {
+      location: 'Conference Room A',
+      participants: ['All Associates'],
+      priority: 'medium'
+    }
+  },
+  {
+    id: 'feb-1-2',
+    title: 'Smith Contract Review',
+    type: 'INTERNAL',
+    start: '2024-02-01T10:30',
+    end: '2024-02-01T12:00',
+    metadata: {
+      client: 'Smith Corp',
+      requiredDocuments: ['Contract Draft v2.1']
+    }
+  },
+  {
+    id: 'feb-1-3',
+    title: 'Client Consultation - Johnson Case',
+    type: 'MEETING',
+    start: '2024-02-01T13:30',
+    end: '2024-02-01T14:30',
+    metadata: {
+      client: 'Johnson Family',
+      location: 'Meeting Room 2',
+      participants: ['Sarah Johnson', 'Mark Johnson']
+    }
+  },
+  {
+    id: 'feb-1-4',
+    title: 'Document Filing Deadline - Davis Case',
+    type: 'DEADLINE',
+    start: '2024-02-01T17:00',
+    metadata: {
+      priority: 'high',
+      client: 'Davis Industries'
+    }
+  },
+
+  // February 2, 2024 (Friday)
+  {
+    id: 'feb-2-1',
+    title: 'Brown vs State Hearing',
+    type: 'HEARING',
+    start: '2024-02-02T09:30',
+    end: '2024-02-02T11:30',
+    metadata: {
+      courthouse: 'Central District Court',
+      courtroom: '3A',
+      client: 'James Brown',
+      priority: 'high'
+    }
+  },
+  {
+    id: 'feb-2-2',
+    title: 'Deposition - Thompson Case',
+    type: 'DEPOSITION',
+    start: '2024-02-02T13:00',
+    end: '2024-02-02T15:00',
+    metadata: {
+      location: 'Law Offices',
+      client: 'Thompson LLC',
+      participants: ['Expert Witness', 'Opposing Counsel']
+    }
+  },
+  {
+    id: 'feb-2-3',
+    title: 'Case Strategy Review',
+    type: 'INTERNAL',
+    start: '2024-02-02T15:30',
+    end: '2024-02-02T16:30',
+    metadata: {
+      location: 'Conference Room B',
+      participants: ['Senior Partners']
+    }
+  },
+
+  // February 5, 2024 (Monday)
+  {
+    id: 'feb-5-1',
+    title: 'Weekly Planning Meeting',
+    type: 'INTERNAL',
+    start: '2024-02-05T09:00',
+    end: '2024-02-05T10:00',
     metadata: {
       location: 'Main Conference Room',
-      description: 'Weekly case strategy and workload distribution meeting',
-      priority: 'medium',
-      participants: ['All Associates', 'Partners'],
-      agenda: ['Case Updates', 'Resource Allocation', 'Upcoming Deadlines'],
+      participants: ['All Staff']
     }
   },
-
-  // Case Deadlines
   {
-    id: 'deadline-1',
-    title: 'Motion Filing Deadline - Smith Case',
-    type: 'DEADLINE',
-    start: new Date('2024-04-18'),
-    allDay: true,
+    id: 'feb-5-2',
+    title: 'Wilson Estate Planning',
+    type: 'MEETING',
+    start: '2024-02-05T10:30',
+    end: '2024-02-05T12:00',
     metadata: {
-      caseNumber: 'CV-2024-123',
-      description: 'Summary judgment motion filing deadline',
-      client: 'Smith Industries',
-      priority: 'critical',
-      assignedTo: 'Sarah Johnson',
-      requiredDocuments: ['Motion Draft', 'Supporting Evidence'],
+      client: 'Wilson Family',
+      location: 'Meeting Room 1'
     }
   },
   {
-    id: 'deadline-2',
-    title: 'Tech Corp Patent Response Due',
-    type: 'DEADLINE',
-    start: new Date('2024-04-22T17:00:00'),
-    metadata: {
-      caseNumber: 'IP-2024-789',
-      client: 'Tech Corp',
-      priority: 'critical',
-      requiredDocuments: ['Response Brief', 'Supporting Documentation'],
-    }
-  },
-  {
-    id: 'deadline-3',
-    title: 'Smith Summary Judgment Motion Due',
-    type: 'DEADLINE',
-    start: new Date('2024-04-29T16:00:00'),
-    metadata: {
-      caseNumber: 'CV-2024-123',
-      client: 'Smith Industries',
-      priority: 'high',
-      requiredDocuments: ['Motion for Summary Judgment', 'Supporting Exhibits'],
-    }
-  },
-
-  // Statute of Limitations
-  {
-    id: 'sol-1',
-    title: 'SOL Deadline - Brown Estate',
-    type: 'SOL',
-    start: new Date('2024-06-30'),
-    allDay: true,
-    metadata: {
-      caseNumber: 'PR-2024-789',
-      description: 'Statute of Limitations for probate claim',
-      client: 'Brown Estate',
-      priority: 'critical',
-      assignedTo: 'Mark Wilson',
-      jurisdiction: 'State Court',
-      causeOfAction: 'Probate Claim',
-    }
-  },
-  {
-    id: 'sol-2',
-    title: 'SOL - MedTech Product Liability',
-    type: 'SOL',
-    start: new Date('2024-05-15T00:00:00'),
-    metadata: {
-      client: 'MedTech Innovations',
-      priority: 'critical',
-      description: 'Product liability claim deadline',
-      requiredAction: 'File Complaint',
-    }
-  },
-
-  // Mediation
-  {
-    id: 'mediation-1',
-    title: 'Mediation - Global Logistics Case',
+    id: 'feb-5-3',
+    title: 'Mediation - Roberts Dispute',
     type: 'MEDIATION',
-    start: new Date('2024-04-22T09:00:00'),
-    end: new Date('2024-04-22T17:00:00'),
+    start: '2024-02-05T13:30',
+    end: '2024-02-05T16:30',
     metadata: {
-      caseNumber: 'CV-2024-567',
       location: 'Mediation Center',
-      mediator: 'Hon. James Roberts (Ret.)',
-      client: 'Global Logistics Inc',
-      description: 'Full-day mediation session for contract dispute',
-      priority: 'high',
-      participants: ['Sarah Johnson', 'Client Representatives', 'Opposing Counsel'],
-      requiredDocuments: ['Mediation Brief', 'Settlement Authority'],
-    }
-  },
-  {
-    id: 'mediation-2',
-    title: 'Rodriguez v. Global Logistics Mediation',
-    type: 'MEDIATION',
-    start: new Date('2024-04-19T09:30:00'),
-    end: new Date('2024-04-19T17:00:00'),
-    metadata: {
-      caseNumber: 'CV-2024-456',
-      mediator: 'Hon. Robert Thompson (Ret.)',
-      location: 'Mediation Center',
-      client: 'Global Logistics Inc',
-      priority: 'high',
-      participants: ['Marcus Rodriguez', 'Sarah Johnson', 'Opposing Counsel'],
+      client: 'Roberts Manufacturing',
+      priority: 'high'
     }
   },
 
-  // Client Training
+  // February 6, 2024 (Tuesday)
   {
-    id: 'training-1',
-    title: 'Compliance Training - MedTech Staff',
-    type: 'TRAINING',
-    start: new Date('2024-04-24T13:00:00'),
-    end: new Date('2024-04-24T15:00:00'),
+    id: 'feb-6-1',
+    title: 'SOL Deadline - Martinez Case',
+    type: 'SOL',
+    start: '2024-02-06T09:00',
     metadata: {
-      location: 'Client Office',
-      client: 'MedTech Innovations',
-      description: 'Staff training on new medical device regulations',
-      priority: 'medium',
-      presenter: 'Sarah Johnson',
-      participants: ['MedTech Legal Team', 'R&D Staff'],
-      materials: ['Training Slides', 'Compliance Checklist'],
+      client: 'Martinez',
+      priority: 'critical'
     }
   },
   {
-    id: 'training-2',
-    title: 'Legal Tech Training',
-    type: 'TRAINING',
-    start: new Date('2024-04-26T13:00:00'),
-    end: new Date('2024-04-26T16:00:00'),
+    id: 'feb-6-2',
+    title: 'Client Meeting - Tech Corp',
+    type: 'MEETING',
+    start: '2024-02-06T10:00',
+    end: '2024-02-06T11:30',
     metadata: {
-      instructor: 'Tech Solutions Inc',
-      location: 'Training Room B',
-      priority: 'medium',
-      topics: ['New Case Management System', 'Document Automation'],
-    }
-  },
-
-  // Board Meetings
-  {
-    id: 'board-1',
-    title: 'Board Meeting - Tech Corp',
-    type: 'BOARD_MEETING',
-    start: new Date('2024-04-29T10:00:00'),
-    end: new Date('2024-04-29T12:00:00'),
-    metadata: {
-      location: 'Client Headquarters',
       client: 'Tech Corp',
-      description: 'Quarterly board meeting attendance',
-      priority: 'high',
-      participants: ['Board Members', 'Sarah Johnson'],
-      requiredDocuments: ['Board Resolution Drafts', 'Legal Updates Report'],
+      location: 'Virtual Meeting'
     }
   },
   {
-    id: 'board-2',
-    title: 'Firm Partner Meeting',
+    id: 'feb-6-3',
+    title: 'Legal Training Session',
+    type: 'TRAINING',
+    start: '2024-02-06T13:00',
+    end: '2024-02-06T15:00',
+    metadata: {
+      location: 'Training Room',
+      participants: ['Junior Associates']
+    }
+  },
+  {
+    id: 'feb-6-4',
+    title: 'Document Review - Anderson Case',
+    type: 'INTERNAL',
+    start: '2024-02-06T15:30',
+    end: '2024-02-06T17:00',
+    metadata: {
+      client: 'Anderson Inc',
+      requiredDocuments: ['Case Files', 'Evidence Documents']
+    }
+  },
+
+  // Continue with more February dates...
+  // February 7, 2024 (Wednesday)
+  {
+    id: 'feb-7-1',
+    title: 'Board Meeting',
     type: 'BOARD_MEETING',
-    start: new Date('2024-04-25T15:00:00'),
-    end: new Date('2024-04-25T17:00:00'),
+    start: '2024-02-07T09:00',
+    end: '2024-02-07T11:00',
+    metadata: {
+      location: 'Executive Boardroom',
+      priority: 'high'
+    }
+  },
+  {
+    id: 'feb-7-2',
+    title: 'Client Consultation - Harris',
+    type: 'MEETING',
+    start: '2024-02-07T11:30',
+    end: '2024-02-07T12:30',
+    metadata: {
+      client: 'Harris Family',
+      location: 'Meeting Room 3'
+    }
+  },
+  {
+    id: 'feb-7-3',
+    title: 'Court Filing Deadline',
+    type: 'DEADLINE',
+    start: '2024-02-07T16:00',
+    metadata: {
+      priority: 'high',
+      client: 'Multiple Cases'
+    }
+  },
+
+  // February 8, 2024 (Thursday)
+  {
+    id: 'feb-8-1',
+    title: 'Phillips vs State Hearing',
+    type: 'HEARING',
+    start: '2024-02-08T10:00',
+    end: '2024-02-08T12:00',
+    metadata: {
+      courthouse: 'District Court',
+      courtroom: '5B',
+      client: 'Phillips',
+      priority: 'high'
+    }
+  },
+  {
+    id: 'feb-8-2',
+    title: 'Team Lunch',
+    type: 'INTERNAL',
+    start: '2024-02-08T12:30',
+    end: '2024-02-08T13:30',
+    metadata: {
+      location: 'Restaurant'
+    }
+  },
+  {
+    id: 'feb-8-3',
+    title: 'Client Strategy Meeting',
+    type: 'MEETING',
+    start: '2024-02-08T14:00',
+    end: '2024-02-08T15:30',
+    metadata: {
+      client: 'Global Industries',
+      location: 'Conference Room A'
+    }
+  },
+
+  // February 9, 2024 (Friday)
+  {
+    id: 'feb-9-1',
+    title: 'Expert Witness Deposition',
+    type: 'DEPOSITION',
+    start: '2024-02-09T09:30',
+    end: '2024-02-09T12:30',
+    metadata: {
+      location: 'Law Offices',
+      client: 'Turner Case',
+      participants: ['Dr. Smith', 'Opposing Counsel']
+    }
+  },
+  {
+    id: 'feb-9-2',
+    title: 'Case Review Meeting',
+    type: 'INTERNAL',
+    start: '2024-02-09T14:00',
+    end: '2024-02-09T15:30',
+    metadata: {
+      location: 'Meeting Room 1',
+      participants: ['Legal Team']
+    }
+  },
+  {
+    id: 'feb-9-3',
+    title: 'Client Call - International Corp',
+    type: 'MEETING',
+    start: '2024-02-09T16:00',
+    end: '2024-02-09T17:00',
+    metadata: {
+      client: 'International Corp',
+      location: 'Virtual Meeting'
+    }
+  },
+
+  // February 12, 2024 (Monday)
+  {
+    id: 'feb-12-1',
+    title: 'Weekly Team Meeting',
+    type: 'INTERNAL',
+    start: '2024-02-12T09:00',
+    end: '2024-02-12T10:30',
     metadata: {
       location: 'Main Conference Room',
+      participants: ['All Staff'],
+      priority: 'medium'
+    }
+  },
+  {
+    id: 'feb-12-2',
+    title: 'Client Intake - New Corporate Matter',
+    type: 'MEETING',
+    start: '2024-02-12T11:00',
+    end: '2024-02-12T12:30',
+    metadata: {
+      client: 'XYZ Corporation',
+      location: 'Meeting Room 2'
+    }
+  },
+  {
+    id: 'feb-12-3',
+    title: 'Settlement Conference',
+    type: 'MEDIATION',
+    start: '2024-02-12T14:00',
+    end: '2024-02-12T17:00',
+    metadata: {
+      location: 'Mediation Center',
+      client: 'Smith vs Johnson',
+      priority: 'high'
+    }
+  },
+
+  // February 13, 2024 (Tuesday)
+  {
+    id: 'feb-13-1',
+    title: 'Motion Hearing - Davis Case',
+    type: 'HEARING',
+    start: '2024-02-13T09:30',
+    end: '2024-02-13T11:30',
+    metadata: {
+      courthouse: 'Superior Court',
+      courtroom: '4C',
+      client: 'Davis Industries',
+      priority: 'high'
+    }
+  },
+  {
+    id: 'feb-13-2',
+    title: 'Document Review Session',
+    type: 'INTERNAL',
+    start: '2024-02-13T13:00',
+    end: '2024-02-13T15:00',
+    metadata: {
+      location: 'Review Room',
+      participants: ['Junior Associates'],
+      requiredDocuments: ['Discovery Documents']
+    }
+  },
+  {
+    id: 'feb-13-3',
+    title: 'Client Update Meeting',
+    type: 'MEETING',
+    start: '2024-02-13T15:30',
+    end: '2024-02-13T16:30',
+    metadata: {
+      client: 'Roberts Manufacturing',
+      location: 'Virtual Meeting'
+    }
+  },
+
+  // February 14, 2024 (Wednesday)
+  {
+    id: 'feb-14-1',
+    title: 'Deposition - Expert Witness',
+    type: 'DEPOSITION',
+    start: '2024-02-14T09:00',
+    end: '2024-02-14T12:00',
+    metadata: {
+      location: 'Law Offices',
+      client: 'Thompson LLC',
+      participants: ['Dr. Wilson', 'Opposing Counsel']
+    }
+  },
+  {
+    id: 'feb-14-2',
+    title: 'Practice Group Meeting',
+    type: 'INTERNAL',
+    start: '2024-02-14T13:30',
+    end: '2024-02-14T14:30',
+    metadata: {
+      location: 'Conference Room B',
+      participants: ['Litigation Team']
+    }
+  },
+  {
+    id: 'feb-14-3',
+    title: 'Brief Filing Deadline',
+    type: 'DEADLINE',
+    start: '2024-02-14T17:00',
+    metadata: {
       priority: 'high',
-      agenda: ['Q2 Review', 'New Client Acquisitions', 'Technology Updates'],
+      client: 'Phillips Case'
+    }
+  },
+
+  // February 15, 2024 (Thursday)
+  {
+    id: 'feb-15-1',
+    title: 'Case Management Conference',
+    type: 'HEARING',
+    start: '2024-02-15T10:00',
+    end: '2024-02-15T11:00',
+    metadata: {
+      courthouse: 'District Court',
+      courtroom: '2A',
+      client: 'Multiple Cases'
+    }
+  },
+  {
+    id: 'feb-15-2',
+    title: 'Client Strategy Session',
+    type: 'MEETING',
+    start: '2024-02-15T13:00',
+    end: '2024-02-15T14:30',
+    metadata: {
+      client: 'Tech Corp',
+      location: 'Meeting Room 1'
+    }
+  },
+  {
+    id: 'feb-15-3',
+    title: 'SOL Review - Upcoming Cases',
+    type: 'INTERNAL',
+    start: '2024-02-15T15:00',
+    end: '2024-02-15T16:30',
+    metadata: {
+      location: 'Conference Room A',
+      priority: 'high'
+    }
+  },
+
+  // February 16, 2024 (Friday)
+  {
+    id: 'feb-16-1',
+    title: 'Settlement Negotiation',
+    type: 'MEDIATION',
+    start: '2024-02-16T09:30',
+    end: '2024-02-16T12:30',
+    metadata: {
+      location: 'Mediation Center',
+      client: 'Harris vs Global Corp',
+      priority: 'high'
+    }
+  },
+  {
+    id: 'feb-16-2',
+    title: 'Team Training Session',
+    type: 'TRAINING',
+    start: '2024-02-16T14:00',
+    end: '2024-02-16T16:00',
+    metadata: {
+      location: 'Training Room',
+      participants: ['All Associates']
+    }
+  },
+  {
+    id: 'feb-16-3',
+    title: 'Weekly Case Review',
+    type: 'INTERNAL',
+    start: '2024-02-16T16:30',
+    end: '2024-02-16T17:30',
+    metadata: {
+      location: 'Conference Room B',
+      participants: ['Senior Partners']
+    }
+  },
+
+  // Continue with more February dates...
+  {
+    id: '1',
+    title: 'Expert Witness Deposition',
+    type: 'DEPOSITION',
+    start: '2025-02-10T09:00',
+    end: '2025-02-10T12:00',
+    metadata: {
+      location: 'Smith & Associates Law Office',
+      participants: ['Dr. James Wilson', 'Sarah Parker', 'Defense Counsel'],
+      requiredDocuments: ['Expert Report', 'Case Files'],
+      priority: 'high',
+      client: 'Johnson Manufacturing Co.'
+    }
+  },
+  {
+    id: '2',
+    title: 'Status Conference',
+    type: 'HEARING',
+    start: '2025-02-15T10:30',
+    end: '2025-02-15T11:30',
+    metadata: {
+      courthouse: 'District Court',
+      courtroom: '3A',
+      participants: ['Judge Thompson', 'All Counsel'],
+      priority: 'medium',
+      client: 'Smith vs. Johnson'
+    }
+  },
+  {
+    id: '3',
+    title: 'Client Strategy Meeting',
+    type: 'MEETING',
+    start: '2025-02-20T14:00',
+    end: '2025-02-20T15:30',
+    metadata: {
+      location: 'Conference Room 2',
+      participants: ['Client Executive Team', 'Legal Team'],
+      requiredDocuments: ['Case Summary', 'Strategy Document'],
+      priority: 'medium',
+      client: 'Tech Solutions Inc.'
+    }
+  },
+  {
+    id: '4',
+    title: 'Document Production Deadline',
+    type: 'DEADLINE',
+    start: '2025-02-28T17:00',
+    allDay: true,
+    metadata: {
+      requiredDocuments: ['Discovery Documents', 'Privilege Log'],
+      priority: 'high',
+      client: 'Smith vs. Johnson'
+    }
+  },
+  {
+    id: '5',
+    title: 'Mediation Session',
+    type: 'MEDIATION',
+    start: '2025-03-05T09:00',
+    end: '2025-03-05T16:00',
+    metadata: {
+      location: 'ADR Center',
+      participants: ['Mediator John Davis', 'All Parties', 'Counsel'],
+      requiredDocuments: ['Settlement Proposal', 'Case Summary'],
+      priority: 'high',
+      client: 'Smith vs. Johnson'
+    }
+  },
+  {
+    id: '6',
+    title: 'SOL Deadline - Product Liability',
+    type: 'SOL',
+    start: '2025-03-10T00:00',
+    allDay: true,
+    metadata: {
+      priority: 'critical',
+      client: 'Martinez Case',
+      requiredDocuments: ['Complaint Draft', 'Evidence Summary']
+    }
+  },
+  {
+    id: '7',
+    title: 'Board Meeting',
+    type: 'BOARD_MEETING',
+    start: '2025-03-15T10:00',
+    end: '2025-03-15T12:00',
+    metadata: {
+      location: 'Executive Boardroom',
+      participants: ['Board Members', 'Legal Team'],
+      requiredDocuments: ['Legal Update Presentation'],
+      priority: 'medium'
+    }
+  },
+  {
+    id: '8',
+    title: 'Witness Preparation',
+    type: 'INTERNAL',
+    start: '2025-03-20T13:00',
+    end: '2025-03-20T16:00',
+    metadata: {
+      location: 'Conference Room 3',
+      participants: ['Key Witness', 'Trial Team'],
+      requiredDocuments: ['Witness Outline', 'Key Documents'],
+      priority: 'high',
+      client: 'Smith vs. Johnson'
+    }
+  },
+  {
+    id: '9',
+    title: 'Motion Hearing',
+    type: 'HEARING',
+    start: '2025-03-25T09:30',
+    end: '2025-03-25T11:30',
+    metadata: {
+      courthouse: 'Federal Court',
+      courtroom: '5B',
+      participants: ['Judge Martinez', 'All Counsel'],
+      requiredDocuments: ['Motion Papers', 'Supporting Exhibits'],
+      priority: 'high',
+      client: 'Tech Solutions Inc.'
+    }
+  },
+  {
+    id: '10',
+    title: 'Trial Team Training',
+    type: 'TRAINING',
+    start: '2025-03-28T10:00',
+    end: '2025-03-28T16:00',
+    metadata: {
+      location: 'Training Center',
+      participants: ['Trial Team', 'External Consultant'],
+      requiredDocuments: ['Training Materials'],
+      priority: 'medium'
     }
   }
 ];

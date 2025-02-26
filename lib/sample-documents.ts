@@ -1,269 +1,385 @@
-import { ClientFolder, Document, Folder } from '@/types/documents';
+import { ClientFolder, Document } from '@/types/documents';
+
+// Common document types for generating sample data
+const documentTypes = {
+  legal: ['Contract', 'Agreement', 'Amendment', 'Motion', 'Brief', 'Complaint', 'Response', 'Stipulation'],
+  ip: ['Patent Application', 'Trademark Filing', 'IP Strategy', 'License Agreement', 'IP Analysis'],
+  corporate: ['Board Resolution', 'Shareholder Agreement', 'SEC Filing', 'Due Diligence Report'],
+  regulatory: ['Compliance Report', 'Regulatory Filing', 'Audit Report', 'Risk Assessment'],
+  evidence: ['Expert Report', 'Witness Statement', 'Evidence Log', 'Investigation Report'],
+  correspondence: ['Letter', 'Memo', 'Email Summary', 'Meeting Minutes']
+};
+
+// Helper function to generate random documents
+function generateDocuments(count: number, baseNames: string[], prefix = ''): Document[] {
+  return Array.from({ length: count }, (_, i) => {
+    const type = Math.random() > 0.5 ? 'pdf' : Math.random() > 0.5 ? 'docx' : 'xlsx';
+    const baseName = baseNames[Math.floor(Math.random() * baseNames.length)];
+    const name = `${prefix}${baseName}_${Math.floor(Math.random() * 1000)}.${type}`;
+    const status = ['draft', 'review', 'final', 'archived'][Math.floor(Math.random() * 3)] as Document['status']; // Only pick from valid status types
+    return {
+      id: `doc-${Date.now()}-${i}`,
+      name,
+      type,
+      size: Math.floor(Math.random() * 10000000) + 500000,
+      createdAt: new Date(Date.now() - Math.floor(Math.random() * 90) * 24 * 60 * 60 * 1000).toISOString(),
+      modifiedAt: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString(),
+      modifiedBy: ['Sarah Johnson', 'Michael Chang', 'Jennifer Lee', 'David Chen'][Math.floor(Math.random() * 4)],
+      status,
+      version: Math.floor(Math.random() * 3) + 1,
+      tags: [
+        baseNames[Math.floor(Math.random() * baseNames.length)].toLowerCase(),
+        ['urgent', 'confidential', 'internal', 'external'][Math.floor(Math.random() * 4)]
+      ]
+    };
+  });
+}
 
 export const sampleClientFolders: ClientFolder[] = [
   {
     id: 'client-1',
-    name: 'Tech Corp',
-    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=256&h=256&auto=format&fit=crop',
+    name: 'Apple Inc.',
+    avatar: '/images/clients/apple.png',
     totalDocuments: 156,
     recentlyModified: '2024-04-15',
     folders: [
       {
         id: 'case-1',
-        name: 'Patent Litigation',
+        name: 'Patent Litigation vs. Samsung',
         type: 'case',
         status: 'active',
         documents: [
-          {
-            id: 'doc-1',
-            name: 'Initial Patent Analysis.pdf',
-            type: 'pdf',
-            size: 2500000,
-            createdAt: '2024-03-15T10:00:00',
-            modifiedAt: '2024-04-15T14:30:00',
-            modifiedBy: 'Sarah Johnson',
-            status: 'final',
-            version: 2,
-            tags: ['patent', 'analysis']
-          },
-          {
-            id: 'doc-2',
-            name: 'Expert Witness Statement.docx',
-            type: 'docx',
-            size: 1800000,
-            createdAt: '2024-04-01T09:00:00',
-            modifiedAt: '2024-04-14T16:45:00',
-            modifiedBy: 'Mark Wilson',
-            status: 'review',
-            version: 1
-          }
+          ...generateDocuments(8, documentTypes.legal, 'Patent_'),
+          ...generateDocuments(5, documentTypes.ip),
+          ...generateDocuments(7, documentTypes.evidence)
         ],
         subFolders: [
           {
-            id: 'sub-1',
-            name: 'Evidence',
+            id: 'evidence-1',
+            name: 'Technical Evidence',
             type: 'category',
-            documents: [
-              {
-                id: 'doc-3',
-                name: 'Technical Specifications.pdf',
-                type: 'pdf',
-                size: 3500000,
-                createdAt: '2024-03-20T11:00:00',
-                modifiedAt: '2024-04-10T15:30:00',
-                modifiedBy: 'David Chen',
-                status: 'final',
-                version: 1,
-                tags: ['evidence', 'technical']
-              }
-            ]
+            documents: generateDocuments(10, documentTypes.evidence, 'TECH_')
           },
           {
-            id: 'sub-2',
-            name: 'Court Filings',
+            id: 'correspondence-1',
+            name: 'Legal Correspondence',
             type: 'category',
-            documents: [
-              {
-                id: 'doc-4',
-                name: 'Motion for Summary Judgment.docx',
-                type: 'docx',
-                size: 2200000,
-                createdAt: '2024-04-05T14:00:00',
-                modifiedAt: '2024-04-15T11:30:00',
-                modifiedBy: 'Sarah Johnson',
-                status: 'draft',
-                version: 3
-              }
-            ]
+            documents: generateDocuments(6, documentTypes.correspondence)
           }
         ]
       },
       {
-        id: 'cat-1',
-        name: 'Corporate',
-        type: 'category',
-        documents: [
-          {
-            id: 'doc-5',
-            name: 'Board Meeting Minutes.docx',
-            type: 'docx',
-            size: 1500000,
-            createdAt: '2024-04-10T15:00:00',
-            modifiedAt: '2024-04-10T17:30:00',
-            modifiedBy: 'Sarah Johnson',
-            status: 'final',
-            version: 1
-          }
-        ],
-        subFolders: [
-          {
-            id: 'sub-3',
-            name: 'Contracts',
-            type: 'category',
-            documents: [
-              {
-                id: 'doc-6',
-                name: 'Master Services Agreement.docx',
-                type: 'docx',
-                size: 2800000,
-                createdAt: '2024-03-01T09:00:00',
-                modifiedAt: '2024-04-12T10:15:00',
-                modifiedBy: 'Mark Wilson',
-                status: 'final',
-                version: 4,
-                tags: ['contract', 'MSA']
-              }
-            ]
-          },
-          {
-            id: 'sub-4',
-            name: 'IP Portfolio',
-            type: 'category',
-            documents: [
-              {
-                id: 'doc-7',
-                name: 'Patent Portfolio Overview.xlsx',
-                type: 'xlsx',
-                size: 1200000,
-                createdAt: '2024-02-15T09:00:00',
-                modifiedAt: '2024-04-01T14:20:00',
-                modifiedBy: 'David Chen',
-                status: 'final',
-                version: 2,
-                tags: ['IP', 'patents']
-              }
-            ]
-          }
-        ]
+        id: 'case-2',
+        name: 'IP Portfolio Management',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(15, documentTypes.ip)
       }
     ]
   },
   {
     id: 'client-2',
-    name: 'Smith Industries',
-    avatar: 'https://images.unsplash.com/photo-1523287562758-66c7fc58967f?q=80&w=256&h=256&auto=format&fit=crop',
-    totalDocuments: 89,
+    name: 'Microsoft Corporation',
+    avatar: '/images/clients/microsoft.png',
+    totalDocuments: 178,
     recentlyModified: '2024-04-14',
     folders: [
       {
-        id: 'case-2',
-        name: 'Employment Case',
+        id: 'case-3',
+        name: 'Antitrust Defense',
         type: 'case',
         status: 'active',
         documents: [
-          {
-            id: 'doc-8',
-            name: 'Employee Statement.pdf',
-            type: 'pdf',
-            size: 1900000,
-            createdAt: '2024-04-01T13:00:00',
-            modifiedAt: '2024-04-14T09:30:00',
-            modifiedBy: 'Sarah Johnson',
-            status: 'final',
-            version: 2,
-            tags: ['testimony', 'evidence']
-          }
-        ],
-        subFolders: [
-          {
-            id: 'sub-5',
-            name: 'HR Documents',
-            type: 'category',
-            documents: [
-              {
-                id: 'doc-9',
-                name: 'Performance Reviews.xlsx',
-                type: 'xlsx',
-                size: 1200000,
-                createdAt: '2024-03-15T10:00:00',
-                modifiedAt: '2024-04-13T14:20:00',
-                modifiedBy: 'Mark Wilson',
-                status: 'final',
-                version: 1,
-                tags: ['HR', 'evidence']
-              }
-            ]
-          },
-          {
-            id: 'sub-6',
-            name: 'Settlement',
-            type: 'category',
-            documents: [
-              {
-                id: 'doc-10',
-                name: 'Settlement Agreement Draft.docx',
-                type: 'docx',
-                size: 2100000,
-                createdAt: '2024-04-10T16:00:00',
-                modifiedAt: '2024-04-15T11:20:00',
-                modifiedBy: 'Sarah Johnson',
-                status: 'draft',
-                version: 2,
-                tags: ['settlement', 'draft']
-              }
-            ]
-          }
+          ...generateDocuments(12, documentTypes.legal),
+          ...generateDocuments(8, documentTypes.corporate),
+          ...generateDocuments(5, documentTypes.regulatory)
         ]
       },
       {
-        id: 'cat-2',
-        name: 'Compliance',
-        type: 'category',
+        id: 'case-4',
+        name: 'Cloud Services Compliance',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(20, documentTypes.regulatory)
+      }
+    ]
+  },
+  {
+    id: 'client-3',
+    name: 'NVIDIA Corporation',
+    avatar: '/images/clients/nvidia.png',
+    totalDocuments: 134,
+    recentlyModified: '2024-04-13',
+    folders: [
+      {
+        id: 'case-5',
+        name: 'AI Patent Portfolio',
+        type: 'case',
+        status: 'active',
         documents: [
-          {
-            id: 'doc-11',
-            name: 'Annual Compliance Report.pdf',
-            type: 'pdf',
-            size: 3100000,
-            createdAt: '2024-01-15T09:00:00',
-            modifiedAt: '2024-04-01T10:30:00',
-            modifiedBy: 'Mark Wilson',
-            status: 'final',
-            version: 1,
-            tags: ['compliance', 'annual']
-          }
-        ],
-        subFolders: [
-          {
-            id: 'sub-7',
-            name: 'Policies',
-            type: 'category',
-            documents: [
-              {
-                id: 'doc-12',
-                name: 'Employee Handbook 2024.pdf',
-                type: 'pdf',
-                size: 4200000,
-                createdAt: '2024-01-01T09:00:00',
-                modifiedAt: '2024-03-15T14:20:00',
-                modifiedBy: 'Sarah Johnson',
-                status: 'final',
-                version: 3,
-                tags: ['HR', 'policy']
-              }
-            ]
-          }
+          ...generateDocuments(15, documentTypes.ip, 'AI_'),
+          ...generateDocuments(10, documentTypes.regulatory)
         ]
+      }
+    ]
+  },
+  {
+    id: 'client-4',
+    name: 'Tesla, Inc.',
+    avatar: '/images/clients/tesla.png',
+    totalDocuments: 145,
+    recentlyModified: '2024-04-12',
+    folders: [
+      {
+        id: 'case-6',
+        name: 'Autonomous Driving Patents',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(25, [...documentTypes.ip, ...documentTypes.regulatory])
+      }
+    ]
+  },
+  {
+    id: 'client-5',
+    name: 'Meta Platforms, Inc.',
+    avatar: '/images/clients/meta.png',
+    totalDocuments: 167,
+    recentlyModified: '2024-04-11',
+    folders: [
+      {
+        id: 'case-7',
+        name: 'Privacy Compliance',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(30, documentTypes.regulatory)
+      }
+    ]
+  },
+  {
+    id: 'client-6',
+    name: 'Intel Corporation',
+    avatar: '/images/clients/intel.png',
+    totalDocuments: 142,
+    recentlyModified: '2024-04-10',
+    folders: [
+      {
+        id: 'case-8',
+        name: 'Semiconductor IP Defense',
+        type: 'case',
+        status: 'active',
+        documents: [
+          ...generateDocuments(12, documentTypes.ip, 'SEMI_'),
+          ...generateDocuments(8, documentTypes.legal),
+        ]
+      },
+      {
+        id: 'case-9',
+        name: 'Manufacturing Compliance',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(15, documentTypes.regulatory)
+      }
+    ]
+  },
+  {
+    id: 'client-7',
+    name: 'Google LLC',
+    avatar: '/images/clients/google.png',
+    totalDocuments: 189,
+    recentlyModified: '2024-04-09',
+    folders: [
+      {
+        id: 'case-10',
+        name: 'AI Ethics Compliance',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(25, documentTypes.regulatory)
+      },
+      {
+        id: 'case-11',
+        name: 'Search Technology Patents',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(20, documentTypes.ip)
+      }
+    ]
+  },
+  {
+    id: 'client-8',
+    name: 'Amazon.com, Inc.',
+    avatar: '/images/clients/amazon.png',
+    totalDocuments: 201,
+    recentlyModified: '2024-04-08',
+    folders: [
+      {
+        id: 'case-12',
+        name: 'E-commerce Patents',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(18, documentTypes.ip)
+      },
+      {
+        id: 'case-13',
+        name: 'AWS Security Compliance',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(22, documentTypes.regulatory)
+      }
+    ]
+  },
+  {
+    id: 'client-9',
+    name: 'Adobe Inc.',
+    avatar: '/images/clients/adobe.png',
+    totalDocuments: 132,
+    recentlyModified: '2024-04-07',
+    folders: [
+      {
+        id: 'case-14',
+        name: 'Creative Software IP',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(28, documentTypes.ip)
+      }
+    ]
+  },
+  {
+    id: 'client-10',
+    name: 'Qualcomm Inc.',
+    avatar: '/images/clients/qualcomm.png',
+    totalDocuments: 156,
+    recentlyModified: '2024-04-06',
+    folders: [
+      {
+        id: 'case-15',
+        name: '5G Patent Portfolio',
+        type: 'case',
+        status: 'active',
+        documents: [
+          ...generateDocuments(15, documentTypes.ip, '5G_'),
+          ...generateDocuments(10, documentTypes.legal)
+        ]
+      }
+    ]
+  },
+  {
+    id: 'client-11',
+    name: 'IBM Corporation',
+    avatar: '/images/clients/ibm.png',
+    totalDocuments: 223,
+    recentlyModified: '2024-04-05',
+    folders: [
+      {
+        id: 'case-16',
+        name: 'Quantum Computing IP',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(30, documentTypes.ip)
+      },
+      {
+        id: 'case-17',
+        name: 'Enterprise Software Licensing',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(25, [...documentTypes.legal, ...documentTypes.corporate])
+      }
+    ]
+  },
+  {
+    id: 'client-12',
+    name: 'Oracle Corporation',
+    avatar: '/images/clients/oracle.png',
+    totalDocuments: 167,
+    recentlyModified: '2024-04-04',
+    folders: [
+      {
+        id: 'case-18',
+        name: 'Database Technology Patents',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(25, documentTypes.ip)
+      }
+    ]
+  },
+  {
+    id: 'client-13',
+    name: 'Salesforce, Inc.',
+    avatar: '/images/clients/salesforce.png',
+    totalDocuments: 145,
+    recentlyModified: '2024-04-03',
+    folders: [
+      {
+        id: 'case-19',
+        name: 'CRM Software Patents',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(28, documentTypes.ip)
+      }
+    ]
+  },
+  {
+    id: 'client-14',
+    name: 'AMD',
+    avatar: '/images/clients/amd.png',
+    totalDocuments: 134,
+    recentlyModified: '2024-04-02',
+    folders: [
+      {
+        id: 'case-20',
+        name: 'Processor Technology IP',
+        type: 'case',
+        status: 'active',
+        documents: [
+          ...generateDocuments(20, documentTypes.ip),
+          ...generateDocuments(10, documentTypes.regulatory)
+        ]
+      }
+    ]
+  },
+  {
+    id: 'client-15',
+    name: 'Cisco Systems',
+    avatar: '/images/clients/cisco.png',
+    totalDocuments: 178,
+    recentlyModified: '2024-04-01',
+    folders: [
+      {
+        id: 'case-21',
+        name: 'Network Technology Patents',
+        type: 'case',
+        status: 'active',
+        documents: generateDocuments(30, documentTypes.ip)
       }
     ]
   }
 ];
 
-export const recentDocuments: Document[] = [
-  sampleClientFolders[0].folders[0].documents[0], // Initial Patent Analysis
-  sampleClientFolders[1].folders[0].subFolders![1].documents[0], // Settlement Agreement
-  sampleClientFolders[0].folders[0].subFolders![1].documents[0], // Motion for Summary Judgment
-].map(doc => ({
-  ...doc,
-  client: doc.id.startsWith('doc-1') ? 'Tech Corp' : 'Smith Industries',
-  case: doc.id.startsWith('doc-1') ? 'Patent Litigation' : 'Employment Case'
-}));
+// Generate recent documents from across all clients
+export const recentDocuments: Document[] = sampleClientFolders
+  .flatMap(client => 
+    client.folders.flatMap(folder => 
+      folder.documents.map(doc => ({
+        ...doc,
+        client: client.name,
+        case: folder.name
+      }))
+    )
+  )
+  .sort((a, b) => new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime())
+  .slice(0, 20);
 
-export const starredDocuments: Document[] = [
-  sampleClientFolders[0].folders[1].subFolders![0].documents[0], // Master Services Agreement
-  sampleClientFolders[1].folders[1].documents[0], // Annual Compliance Report
-].map(doc => ({
-  ...doc,
-  client: doc.id.startsWith('doc-6') ? 'Tech Corp' : 'Smith Industries',
-  case: doc.id.startsWith('doc-6') ? 'Corporate' : 'Compliance'
-}));
+// Generate starred documents
+export const starredDocuments: Document[] = sampleClientFolders
+  .flatMap(client => 
+    client.folders.flatMap(folder => 
+      folder.documents
+        .filter(() => Math.random() > 0.8) // Randomly select ~20% of documents
+        .map(doc => ({
+          ...doc,
+          client: client.name,
+          case: folder.name
+        }))
+    )
+  )
+  .sort(() => Math.random() - 0.5)
+  .slice(0, 15);

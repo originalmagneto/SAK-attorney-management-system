@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,14 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import { cn } from '@/lib/utils';
 import {
   FileText,
@@ -25,7 +34,10 @@ import {
   List,
   File,
   FileImage,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ArrowUpDown,
+  ArrowDownAZ,
+  Calendar
 } from 'lucide-react';
 import { useUIStore } from '@/lib/store';
 import { Document, Folder, ClientFolder } from '@/types/documents';
@@ -187,11 +199,14 @@ function findFolderAndDocuments(clientFolders: ClientFolder[], folderId: string)
   return result;
 }
 
+type SortOption = 'name' | 'date' | 'size';
+
 export default function DocumentsPage() {
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [sortBy, setSortBy] = useState<SortOption>('date');
 
   const client = selectedClient ? sampleClientFolders.find(c => c.id === selectedClient) : null;
   const folderData = selectedFolder ? findFolderAndDocuments(sampleClientFolders, selectedFolder) : null;
@@ -199,6 +214,21 @@ export default function DocumentsPage() {
   const handleClientSelect = (clientId: string) => {
     setSelectedClient(clientId);
     setSelectedFolder(null);
+  };
+
+  const sortDocuments = (docs: Document[]) => {
+    return [...docs].sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'date':
+          return new Date(b.modifiedAt).getTime() - new Date(a.modifiedAt).getTime();
+        case 'size':
+          return b.size - a.size;
+        default:
+          return 0;
+      }
+    });
   };
 
   return (
@@ -259,20 +289,26 @@ export default function DocumentsPage() {
                 </div>
 
                 <TabsContent value="recent" className="m-0">
-                  <div className={cn(
-                    "grid gap-4",
-                    viewMode === 'grid' 
-                      ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
-                      : 'grid-cols-1'
-                  )}>
-                    {recentDocuments.map(doc => (
-                      <DocumentCard
-                        key={doc.id}
-                        document={doc}
-                        viewMode={viewMode}
-                      />
-                    ))}
-                  </div>
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true
+                    }}
+                    className="w-full"
+                  >
+                    <CarouselContent className="-ml-2 md:-ml-4">
+                      {recentDocuments.map((doc) => (
+                        <CarouselItem key={doc.id} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-1/5">
+                          <DocumentCard
+                            document={doc}
+                            viewMode="grid"
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious />
+                    <CarouselNext />
+                  </Carousel>
                 </TabsContent>
 
                 <TabsContent value="starred" className="m-0">
@@ -295,72 +331,103 @@ export default function DocumentsPage() {
             </Card>
 
             {/* Client Folders */}
-            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-              {sampleClientFolders.map(client => (
-                <Card
-                  key={client.id}
-                  className="p-6 hover:shadow-lg transition-shadow cursor-pointer"
-                  onClick={() => handleClientSelect(client.id)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
-                        {client.avatar ? (
-                          <img
-                            src={client.avatar}
-                            alt={client.name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <Users className="h-6 w-6 text-primary" />
-                        )}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Client Folders</h2>
+                <Select value={sortBy} onValueChange={(value: SortOption) => setSortBy(value)}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Sort by..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="date">
+                      <div className="flex items-center">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        Sort by Date
                       </div>
-                      <div>
-                        <h3 className="font-semibold">{client.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {client.totalDocuments} documents
-                        </p>
+                    </SelectItem>
+                    <SelectItem value="name">
+                      <div className="flex items-center">
+                        <ArrowDownAZ className="mr-2 h-4 w-4" />
+                        Sort by Name
                       </div>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  
-                  <div className="mt-4 space-y-2">
-                    {client.folders.slice(0, 2).map(folder => (
-                      <div
-                        key={folder.id}
-                        className="flex items-center gap-2 text-sm text-muted-foreground"
-                      >
-                        {folder.type === 'case' ? (
-                          <Briefcase className="h-4 w-4" />
-                        ) : (
-                          <FolderTree className="h-4 w-4" />
-                        )}
-                        <span>{folder.name}</span>
-                        {folder.status && (
-                          <Badge
-                            variant={folder.status === 'active' ? 'default' : 'secondary'}
-                            className="ml-auto text-xs"
-                          >
-                            {folder.status}
-                          </Badge>
-                        )}
+                    </SelectItem>
+                    <SelectItem value="size">
+                      <div className="flex items-center">
+                        <ArrowUpDown className="mr-2 h-4 w-4" />
+                        Sort by Size
                       </div>
-                    ))}
-                    {client.folders.length > 2 && (
-                      <p className="text-sm text-muted-foreground">
-                        +{client.folders.length - 2} more folders
-                      </p>
-                    )}
-                  </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-                  <div className="mt-4 pt-4 border-t">
-                    <p className="text-xs text-muted-foreground">
-                      Last modified {format(new Date(client.recentlyModified), 'MMM d, yyyy')}
-                    </p>
-                  </div>
-                </Card>
-              ))}
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {sampleClientFolders.map(client => (
+                  <Card
+                    key={client.id}
+                    className="p-4 hover:shadow-lg transition-shadow cursor-pointer"
+                    onClick={() => handleClientSelect(client.id)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center overflow-hidden">
+                          {client.avatar ? (
+                            <img
+                              src={client.avatar}
+                              alt={client.name}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <Users className="h-5 w-5 text-primary" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-sm">{client.name}</h3>
+                          <p className="text-xs text-muted-foreground">
+                            {client.totalDocuments} documents
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    
+                    <div className="mt-3 space-y-1.5">
+                      {client.folders.slice(0, 2).map(folder => (
+                        <div
+                          key={folder.id}
+                          className="flex items-center gap-2 text-xs text-muted-foreground"
+                        >
+                          {folder.type === 'case' ? (
+                            <Briefcase className="h-3 w-3" />
+                          ) : (
+                            <FolderTree className="h-3 w-3" />
+                          )}
+                          <span className="truncate">{folder.name}</span>
+                          {folder.status && (
+                            <Badge
+                              variant={folder.status === 'active' ? 'default' : 'secondary'}
+                              className="ml-auto text-[10px] h-4"
+                            >
+                              {folder.status}
+                            </Badge>
+                          )}
+                        </div>
+                      ))}
+                      {client.folders.length > 2 && (
+                        <p className="text-xs text-muted-foreground">
+                          +{client.folders.length - 2} more folders
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="mt-3 pt-3 border-t">
+                      <p className="text-xs text-muted-foreground">
+                        Last modified {format(new Date(client.recentlyModified), 'MMM d, yyyy')}
+                      </p>
+                    </div>
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         ) : (
@@ -473,7 +540,7 @@ export default function DocumentsPage() {
                         ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
                         : 'grid-cols-1'
                     )}>
-                      {folderData.documents
+                      {sortDocuments(folderData.documents)
                         .filter(doc => 
                           doc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           doc.tags?.some(tag => 
