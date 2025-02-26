@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { store } from '@/lib/store';
@@ -20,12 +21,12 @@ const rateLimiter = rateLimit({
   windowMs: 5 * 60 * 1000, // 5 minutes
 });
 
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
   try {
     // Apply rate limiting
-    await rateLimiter(req);
+    await rateLimiter(request);
     
-    const body = await req.json();
+    const body = await request.json();
     const validatedData = registerSchema.parse(body);
     
     const existingUser = store.getUserByEmail(validatedData.email);
@@ -46,6 +47,7 @@ export async function POST(req: Request) {
       name: validatedData.name,
       passwordHash: hashedPassword,
       role: defaultRole,
+      firmId: undefined,
       createdAt: new Date(),
       updatedAt: new Date()
     };

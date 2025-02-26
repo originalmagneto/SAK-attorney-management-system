@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { sign } from 'jsonwebtoken';
@@ -7,6 +8,7 @@ import { JWTPayload, LoginResponse } from '@/types/auth';
 import { AppError, ErrorCode } from '@/types/errors';
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response';
 import { rateLimit } from '@/lib/rate-limit';
+import { setAuthCookie } from '@/lib/cookies';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -19,12 +21,12 @@ const rateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
 });
 
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
   try {
     // Apply rate limiting
-    await rateLimiter(req);
+    await rateLimiter(request);
     
-    const body = await req.json();
+    const body = await request.json();
     const validatedData = loginSchema.parse(body);
     
     const user = store.getUserByEmail(validatedData.email);
@@ -61,8 +63,7 @@ export async function POST(req: Request) {
       { expiresIn: '24h' }
     );
 
-    const response: LoginResponse = {
-      token,
+    const response = NextResponse.json({
       user: {
         id: user.id,
         email: user.email,
@@ -70,9 +71,12 @@ export async function POST(req: Request) {
         role: user.role,
         firmId: user.firmId
       }
-    };
+    });
 
-    return createSuccessResponse(response);
+    // Set the auth cookie
+    setAuthCookie(response.cookies, token);
+
+    return response;
   } catch (error) {
     return createErrorResponse(error);
   }
