@@ -6,6 +6,7 @@ import { sign } from 'jsonwebtoken';
 import { JWTPayload, RegisterResponse, UserRole } from '@/types/auth';
 import { AppError, ErrorCode } from '@/types/errors';
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response';
+import { rateLimit } from '@/lib/rate-limit';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email format'),
@@ -13,8 +14,17 @@ const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
 });
 
+// Rate limit: 3 attempts per 5 minutes
+const rateLimiter = rateLimit({
+  maxRequests: 3,
+  windowMs: 5 * 60 * 1000, // 5 minutes
+});
+
 export async function POST(req: Request) {
   try {
+    // Apply rate limiting
+    await rateLimiter(req);
+    
     const body = await req.json();
     const validatedData = registerSchema.parse(body);
     

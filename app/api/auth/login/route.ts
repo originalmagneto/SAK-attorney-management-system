@@ -6,14 +6,24 @@ import { store } from '@/lib/store';
 import { JWTPayload, LoginResponse } from '@/types/auth';
 import { AppError, ErrorCode } from '@/types/errors';
 import { createSuccessResponse, createErrorResponse } from '@/lib/api-response';
+import { rateLimit } from '@/lib/rate-limit';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(1, 'Password is required'),
 });
 
+// Rate limit: 5 attempts per minute
+const rateLimiter = rateLimit({
+  maxRequests: 5,
+  windowMs: 60 * 1000, // 1 minute
+});
+
 export async function POST(req: Request) {
   try {
+    // Apply rate limiting
+    await rateLimiter(req);
+    
     const body = await req.json();
     const validatedData = loginSchema.parse(body);
     
