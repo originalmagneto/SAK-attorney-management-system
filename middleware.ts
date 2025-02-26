@@ -28,10 +28,37 @@ function hasRequiredRole(userRole: UserRole, requiredRole: string): boolean {
   return roleHierarchy[userRole]?.includes(requiredRole.toUpperCase());
 }
 
+// Generate CORS headers
+function corsHeaders(origin: string) {
+  return {
+    'Access-Control-Allow-Origin': origin || '*',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Max-Age': '86400',
+  };
+}
+
 export async function middleware(request: NextRequest) {
+  // Handle CORS preflight requests
+  if (request.method === 'OPTIONS') {
+    const origin = request.headers.get('origin') || '*';
+    return new NextResponse(null, {
+      status: 204,
+      headers: corsHeaders(origin),
+    });
+  }
+
+  // Add CORS headers to all responses
+  const response = NextResponse.next();
+  const origin = request.headers.get('origin') || '*';
+  Object.entries(corsHeaders(origin)).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+
   // Skip auth for public routes
   if (request.nextUrl.pathname.match(/^\/(_next|api\/auth|favicon.ico)/)) {
-    return NextResponse.next();
+    return response;
   }
 
   const token = request.cookies.get('token')?.value;
@@ -88,18 +115,13 @@ export async function middleware(request: NextRequest) {
   }
 
   // Add user information to request headers
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set('x-user-id', payload.userId);
-  requestHeaders.set('x-user-role', payload.role);
+  response.headers.set('x-user-id', payload.userId);
+  response.headers.set('x-user-role', payload.role);
   if (payload.firmId) {
-    requestHeaders.set('x-firm-id', payload.firmId);
+    response.headers.set('x-firm-id', payload.firmId);
   }
 
-  return NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  return response;
 }
 
 // Configure which routes should be handled by the middleware
