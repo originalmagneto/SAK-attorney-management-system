@@ -1,61 +1,38 @@
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { verify } from 'jsonwebtoken';
+import { JWTPayload, UserRole } from '@/types/auth';
 
 // Define user roles and their hierarchy
-const roleHierarchy = {
-  owner: ['owner', 'partner', 'associate', 'staff'],
-  partner: ['partner', 'associate', 'staff'],
-  associate: ['associate', 'staff'],
-  staff: ['staff']
+const roleHierarchy: Record<UserRole, string[]> = {
+  OWNER: ['OWNER', 'PARTNER', 'ASSOCIATE', 'STAFF'],
+  PARTNER: ['PARTNER', 'ASSOCIATE', 'STAFF'],
+  ASSOCIATE: ['ASSOCIATE', 'STAFF'],
+  STAFF: ['STAFF']
 };
 
 // Verify JWT token and extract user information
-function verifyToken(token: string) {
+function verifyToken(token: string): JWTPayload | null {
   try {
     const secret = process.env.JWT_SECRET || 'development-secret';
-    return verify(token, secret) as {
-      userId: string;
-      email: string;
-      role: string;
-      firmId: string;
-    };
+    return verify(token, secret) as JWTPayload;
   } catch {
     return null;
   }
 }
 
 // Check if user has required role
-function hasRequiredRole(userRole: string, requiredRole: string) {
-  return roleHierarchy[userRole as keyof typeof roleHierarchy]?.includes(requiredRole);
+function hasRequiredRole(userRole: UserRole, requiredRole: string): boolean {
+  return roleHierarchy[userRole]?.includes(requiredRole.toUpperCase());
 }
 
 export async function middleware(request: NextRequest) {
-  // Skip authentication in development mode
-  if (process.env.NODE_ENV === 'development') {
+  // Skip auth for public routes
+  if (request.nextUrl.pathname.match(/^\/(_next|api\/auth|favicon.ico)/)) {
     return NextResponse.next();
   }
 
-  // Get token from authorization header or cookie
-  const token = request.headers.get('authorization')?.split(' ')[1] || 
-                request.cookies.get('token')?.value;
-
-  // Public routes that don't require authentication
-  const publicRoutes = [
-    '/api/auth/login',
-    '/api/auth/register',
-    '/login',
-    '/register',
-    '/_next',
-    '/favicon.ico'
-  ];
-
-  // Check if route is public
-  if (publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
-    return NextResponse.next();
-  }
-
-  // No token provided - redirect to login for non-API routes
+  const token = request.cookies.get('token')?.value;
   if (!token) {
     if (request.nextUrl.pathname.startsWith('/api/')) {
       return NextResponse.json(
@@ -63,7 +40,7 @@ export async function middleware(request: NextRequest) {
         { status: 401 }
       );
     }
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
   // Verify token
@@ -75,7 +52,7 @@ export async function middleware(request: NextRequest) {
         { status: 401 }
       );
     }
-    return NextResponse.redirect(new URL('/login', request.url));
+    return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
   // Role-based access control for specific routes
@@ -83,17 +60,17 @@ export async function middleware(request: NextRequest) {
     {
       path: '/api/firms',
       methods: ['POST'],
-      role: 'owner'
+      role: 'OWNER'
     },
     {
       path: '/api/firms/:firmId/invite',
       methods: ['POST'],
-      role: 'partner'
+      role: 'PARTNER'
     },
     {
       path: '/api/users/:userId/rate',
       methods: ['PATCH'],
-      role: 'partner'
+      role: 'PARTNER'
     }
   ];
 
@@ -115,7 +92,9 @@ export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-user-id', payload.userId);
   requestHeaders.set('x-user-role', payload.role);
-  requestHeaders.set('x-firm-id', payload.firmId);
+  if (payload.firmId) {
+    requestHeaders.set('x-firm-id', payload.firmId);
+  }
 
   return NextResponse.next({
     request: {
