@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { store } from '@/lib/store';
 import { sign } from 'jsonwebtoken';
+import { JWTPayload, RegisterResponse, UserRole } from '@/types/auth';
 
 // Validation schema for registration
 const registerSchema = z.object({
@@ -31,13 +32,15 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(validatedData.password, 10);
 
+    const defaultRole: UserRole = 'STAFF';
+
     // Create user and store in memory
     const newUser = {
       id: `user_${Date.now()}`,
       email: validatedData.email,
       name: validatedData.name,
       passwordHash: hashedPassword,
-      role: 'STAFF', // Default role
+      role: defaultRole,
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -45,27 +48,32 @@ export async function POST(req: Request) {
     store.addUser(newUser);
 
     // Generate JWT token
+    const payload: JWTPayload = {
+      userId: newUser.id,
+      email: newUser.email,
+      role: newUser.role,
+      firmId: newUser.firmId
+    };
+
     const token = sign(
-      {
-        userId: newUser.id,
-        email: newUser.email,
-        role: newUser.role,
-        firmId: newUser.firmId
-      },
+      payload,
       process.env.JWT_SECRET!,
       { expiresIn: '24h' }
     );
 
-    return NextResponse.json({
+    const response: RegisterResponse = {
       message: 'User registered successfully',
       token,
       user: {
         id: newUser.id,
         email: newUser.email,
         name: newUser.name,
-        role: newUser.role
+        role: newUser.role,
+        firmId: newUser.firmId
       }
-    }, { status: 201 });
+    };
+
+    return NextResponse.json(response, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(

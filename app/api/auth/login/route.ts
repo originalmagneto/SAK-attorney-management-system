@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { sign } from 'jsonwebtoken';
 import { store } from '@/lib/store';
+import { JWTPayload, LoginResponse } from '@/types/auth';
 
 // Validation schema for login
 const loginSchema = z.object({
@@ -41,18 +42,20 @@ export async function POST(req: Request) {
     }
 
     // Generate JWT token
+    const payload: JWTPayload = {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      firmId: user.firmId,
+    };
+
     const token = sign(
-      {
-        userId: user.id,
-        email: user.email,
-        role: user.role,
-        firmId: user.firmId,
-      },
+      payload,
       process.env.JWT_SECRET!,
       { expiresIn: '24h' }
     );
 
-    return NextResponse.json({
+    const response: LoginResponse = {
       token,
       user: {
         id: user.id,
@@ -61,7 +64,9 @@ export async function POST(req: Request) {
         role: user.role,
         firmId: user.firmId
       }
-    });
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -69,7 +74,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
