@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
 import { verify } from 'jsonwebtoken';
 import { JWTPayload, UserRole } from '@/types/auth';
+import { AppError, ErrorCode } from '@/types/errors';
+import { createErrorResponse } from '@/lib/api-response';
 
 // Define user roles and their hierarchy
 const roleHierarchy: Record<UserRole, string[]> = {
@@ -35,9 +37,8 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   if (!token) {
     if (request.nextUrl.pathname.startsWith('/api/')) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
+      return createErrorResponse(
+        new AppError(ErrorCode.UNAUTHORIZED, 'Authentication required')
       );
     }
     return NextResponse.redirect(new URL('/auth/login', request.url));
@@ -47,9 +48,8 @@ export async function middleware(request: NextRequest) {
   const payload = verifyToken(token);
   if (!payload) {
     if (request.nextUrl.pathname.startsWith('/api/')) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
+      return createErrorResponse(
+        new AppError(ErrorCode.UNAUTHORIZED, 'Invalid token')
       );
     }
     return NextResponse.redirect(new URL('/auth/login', request.url));
@@ -82,9 +82,8 @@ export async function middleware(request: NextRequest) {
   });
 
   if (matchedRoute && !hasRequiredRole(payload.role, matchedRoute.role)) {
-    return NextResponse.json(
-      { error: 'Insufficient permissions' },
-      { status: 403 }
+    return createErrorResponse(
+      new AppError(ErrorCode.FORBIDDEN, 'Insufficient permissions')
     );
   }
 

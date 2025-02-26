@@ -4,8 +4,9 @@ import { z } from 'zod';
 import { sign } from 'jsonwebtoken';
 import { store } from '@/lib/store';
 import { JWTPayload, LoginResponse } from '@/types/auth';
+import { AppError, ErrorCode } from '@/types/errors';
+import { createSuccessResponse, createErrorResponse } from '@/lib/api-response';
 
-// Validation schema for login
 const loginSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(1, 'Password is required'),
@@ -14,34 +15,29 @@ const loginSchema = z.object({
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
-    // Validate request body
     const validatedData = loginSchema.parse(body);
     
-    // Find user in memory storage
     const user = store.getUserByEmail(validatedData.email);
     
     if (!user) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
+      throw new AppError(
+        ErrorCode.UNAUTHORIZED,
+        'Invalid credentials'
       );
     }
 
-    // Verify password
     const isValidPassword = await bcrypt.compare(
       validatedData.password,
       user.passwordHash
     );
     
     if (!isValidPassword) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
+      throw new AppError(
+        ErrorCode.UNAUTHORIZED,
+        'Invalid credentials'
       );
     }
 
-    // Generate JWT token
     const payload: JWTPayload = {
       userId: user.id,
       email: user.email,
@@ -66,17 +62,8 @@ export async function POST(req: Request) {
       }
     };
 
-    return NextResponse.json(response);
+    return createSuccessResponse(response);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors },
-        { status: 400 }
-      );
-    }
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return createErrorResponse(error);
   }
 }
