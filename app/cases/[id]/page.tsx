@@ -15,6 +15,27 @@ import {
 } from 'lucide-react';
 import { DocumentVersionControl } from '@/components/document-version-control';
 import { TaskBoard } from '@/components/task-board';
+import { Progress } from '@/components/ui/progress';
+import { Separator } from '@/components/ui/separator';
+import { AIDocumentAnalyzer } from '@/components/ai-document-analyzer';
+import {
+  Sparkles,
+  DollarSign,
+  Scale,
+  Link2,
+  ChevronLeft,
+  Upload,
+  BarChart,
+  MessageSquare,
+} from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const timelineEvents = [
   {
@@ -71,9 +92,55 @@ const messages = [
   },
 ];
 
-export default function CaseDetailPage() {
+// Example case data
+const caseData = {
+  id: 'CASE-2024-001',
+  title: 'Smith vs. Johnson',
+  type: 'Civil Litigation',
+  status: 'Active',
+  description: 'Personal injury case involving a motor vehicle accident',
+  client: {
+    name: 'John Smith',
+    email: 'john@example.com',
+    phone: '+1 (555) 123-4567',
+    address: '123 Main St, City, State 12345'
+  },
+  assignedTo: ['Jane Doe', 'Mike Wilson'],
+  openDate: '2024-01-15',
+  nextHearing: '2024-04-15',
+  court: 'District Court Bratislava I',
+  judge: 'Hon. Judge Davis',
+  progress: 65,
+  billingInfo: {
+    type: 'Hourly',
+    rate: 250,
+    totalBilled: 15750,
+    retainer: 5000,
+    outstanding: 2500
+  },
+  aiInsights: {
+    sentiment: 'positive',
+    predictedOutcome: '75% favorable',
+    riskFactors: ['Witness credibility', 'Documentation gaps'],
+    similarCases: 3,
+    suggestedActions: [
+      'Schedule expert witness deposition',
+      'File motion for additional discovery',
+      'Review similar case precedents'
+    ]
+  },
+  stats: {
+    documentsCount: 45,
+    hoursLogged: 63,
+    deadlinesMet: '92%',
+    upcomingDeadlines: 3
+  }
+};
+
+export default function CaseDetailPage({ params }: { params: { id: string } }) {
   const [activeTab, setActiveTab] = useState('overview');
   const [localMessages, setLocalMessages] = useState(messages);
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
 
   // Add mouse move effect for cards
   useEffect(() => {
@@ -116,126 +183,314 @@ export default function CaseDetailPage() {
 
   return (
     <div className="p-8">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-8"
-      >
-        <div>
-          <div className="flex items-center gap-4">
-            <h1 className="text-3xl font-bold bg-clip-text text-transparent animated-gradient">
-              Smith vs. Johnson
-            </h1>
-            <Badge className="animated-gradient text-white">Active</Badge>
+      {/* Header */}
+      <div className="flex items-start justify-between mb-8">
+        <div className="space-y-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mb-2"
+            onClick={() => window.history.back()}
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Back to Cases
+          </Button>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold">{caseData.title}</h1>
+            <Badge variant="outline">{caseData.type}</Badge>
+            <Badge
+              variant={
+                caseData.status === 'Active' ? 'default' :
+                caseData.status === 'Pending' ? 'secondary' :
+                'outline'
+              }
+            >
+              {caseData.status}
+            </Badge>
           </div>
-          <p className="text-muted-foreground mt-1">
-            Case #2024-001 • Contract Dispute
+          <p className="text-muted-foreground">
+            Case #{caseData.id} • Opened {caseData.openDate}
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" className="gap-2 hover-card glass-effect">
-            <Bell className="h-4 w-4" />
-            Subscribe
-          </Button>
-          <Button variant="outline" size="icon" className="hover-card glass-effect">
-            <MoreVertical className="h-5 w-5" />
+
+        <div className="flex gap-3">
+          <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                <Upload className="h-4 w-4" />
+                Upload Documents
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Upload Case Documents</DialogTitle>
+                <DialogDescription>
+                  Upload documents for AI analysis and organization
+                </DialogDescription>
+              </DialogHeader>
+              <AIDocumentAnalyzer
+                caseId={params.id}
+                documents={[]}
+                onAnalysisComplete={() => setIsUploadDialogOpen(false)}
+              />
+            </DialogContent>
+          </Dialog>
+          <Button className="gap-2">
+            <MessageSquare className="h-4 w-4" />
+            Client Portal
           </Button>
         </div>
-      </motion.div>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
-        {[
-          { icon: Clock, title: 'Time Logged', value: '24.5h' },
-          { icon: Calendar, title: 'Next Hearing', value: 'Mar 28' },
-          { icon: FileText, title: 'Documents', value: '12' }
-        ].map((stat, index) => (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.02 }}
-          >
-            <Card className="gradient-card hover-card glass-effect">
-              <div className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-full bg-primary/10 animated-gradient">
-                    <stat.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {stat.title}
-                    </p>
-                    <h2 className="text-2xl font-bold">{stat.value}</h2>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4 lg:w-[400px] glass-effect">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
-          <TabsTrigger value="chat">Discussion</TabsTrigger>
-          <TabsTrigger value="documents">Documents</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              <Card className="gradient-card hover-card glass-effect">
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Case Timeline</h3>
-                  <CaseTimeline events={timelineEvents} />
+      {/* Main Content */}
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1fr,300px]">
+        <div className="space-y-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList>
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="documents">Documents</TabsTrigger>
+              <TabsTrigger value="timeline">Timeline</TabsTrigger>
+              <TabsTrigger value="billing">Billing</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="overview" className="space-y-6">
+              {/* Quick Stats */}
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                <StatsCard
+                  icon={FileText}
+                  label="Documents"
+                  value={caseData.stats.documentsCount}
+                  subtext="Total files"
+                />
+                <StatsCard
+                  icon={Clock}
+                  label="Hours Logged"
+                  value={caseData.stats.hoursLogged}
+                  subtext="Billable hours"
+                />
+                <StatsCard
+                  icon={Calendar}
+                  label="Deadlines"
+                  value={caseData.stats.deadlinesMet}
+                  subtext={`${caseData.stats.upcomingDeadlines} upcoming`}
+                />
+                <StatsCard
+                  icon={Scale}
+                  label="Progress"
+                  value={`${caseData.progress}%`}
+                  subtext="Case completion"
+                />
+              </div>
+
+              {/* AI Insights */}
+              <Card className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    AI Case Insights
+                  </h3>
+                  <Badge variant="outline">
+                    {caseData.aiInsights.predictedOutcome}
+                  </Badge>
+                </div>
+
+                <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+                  <div>
+                    <h4 className="font-medium mb-3">Risk Factors</h4>
+                    <div className="space-y-2">
+                      {caseData.aiInsights.riskFactors.map((risk, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 text-sm text-muted-foreground"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-yellow-500" />
+                          {risk}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="font-medium mb-3">Suggested Actions</h4>
+                    <div className="space-y-2">
+                      {caseData.aiInsights.suggestedActions.map((action, i) => (
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 text-sm text-muted-foreground"
+                        >
+                          <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                          {action}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </Card>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              <Card className="gradient-card hover-card glass-effect">
-                <div className="p-6">
-                  <h3 className="text-lg font-semibold mb-4">Case Discussion</h3>
-                  <CaseChat messages={localMessages} onSendMessage={handleSendMessage} />
+
+              {/* Case Details */}
+              <Card className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Case Details</h3>
+                <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground">Court</h4>
+                      <p>{caseData.court}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground">Judge</h4>
+                      <p>{caseData.judge}</p>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground">Next Hearing</h4>
+                      <p>{caseData.nextHearing}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground">Assigned Attorneys</h4>
+                      <div className="flex gap-2 mt-1">
+                        {caseData.assignedTo.map((attorney, i) => (
+                          <Badge key={i} variant="secondary">{attorney}</Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-muted-foreground">Description</h4>
+                      <p className="text-sm text-muted-foreground">
+                        {caseData.description}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </Card>
-            </motion.div>
-          </div>
-        </TabsContent>
+            </TabsContent>
 
-        <TabsContent value="timeline">
-          <Card className="gradient-card hover-card glass-effect p-6">
-            <CaseTimeline events={timelineEvents} />
-          </Card>
-        </TabsContent>
+            <TabsContent value="documents">
+              <AIDocumentAnalyzer
+                caseId={params.id}
+                documents={[]}
+                onAnalysisComplete={() => {}}
+              />
+            </TabsContent>
 
-        <TabsContent value="chat">
-          <Card className="gradient-card hover-card glass-effect p-6">
-            <CaseChat messages={localMessages} onSendMessage={handleSendMessage} />
-          </Card>
-        </TabsContent>
+            <TabsContent value="timeline">
+              <CaseTimeline />
+            </TabsContent>
 
-        <TabsContent value="documents">
-          <Card className="gradient-card hover-card glass-effect p-6">
-            <h3 className="font-semibold mb-4">Case Documents</h3>
-            <DocumentVersionControl documentId={1} currentVersion="v2.0" />
-          </Card>
-        </TabsContent>
+            <TabsContent value="billing">
+              <Card className="p-6">
+                <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Billing Summary</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-muted-foreground">Type</span>
+                          <Badge>{caseData.billingInfo.type}</Badge>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-muted-foreground">Rate</span>
+                          <span>${caseData.billingInfo.rate}/hour</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-muted-foreground">Total Billed</span>
+                          <span>${caseData.billingInfo.totalBilled}</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-muted-foreground">Retainer</span>
+                          <span>${caseData.billingInfo.retainer}</span>
+                        </div>
+                        <Separator className="my-4" />
+                        <div className="flex items-center justify-between font-medium">
+                          <span>Outstanding</span>
+                          <span className="text-red-500">${caseData.billingInfo.outstanding}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-        <TabsContent value="tasks">
-          <Card className="gradient-card hover-card glass-effect p-6">
-            <TaskBoard />
+                  <div>
+                    <h3 className="text-lg font-semibold mb-4">Time Entries</h3>
+                    <ScrollArea className="h-[300px]">
+                      {/* Time entries would go here */}
+                    </ScrollArea>
+                  </div>
+                </div>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="space-y-6">
+          {/* Client Info */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Client Information
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Name</h4>
+                <p>{caseData.client.name}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Email</h4>
+                <p>{caseData.client.email}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Phone</h4>
+                <p>{caseData.client.phone}</p>
+              </div>
+              <div>
+                <h4 className="text-sm font-medium text-muted-foreground">Address</h4>
+                <p className="text-sm">{caseData.client.address}</p>
+              </div>
+            </div>
           </Card>
-        </TabsContent>
-      </Tabs>
+
+          {/* Quick Actions */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
+            <div className="space-y-2">
+              <Button variant="outline" className="w-full justify-start gap-2">
+                <Calendar className="h-4 w-4" />
+                Schedule Hearing
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2">
+                <FileText className="h-4 w-4" />
+                Generate Report
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2">
+                <MessageSquare className="h-4 w-4" />
+                Send Message
+              </Button>
+              <Button variant="outline" className="w-full justify-start gap-2">
+                <Link2 className="h-4 w-4" />
+                Link Related Case
+              </Button>
+            </div>
+          </Card>
+        </div>
+      </div>
     </div>
+  );
+}
+
+function StatsCard({ icon: Icon, label, value, subtext }: any) {
+  return (
+    <Card className="p-6">
+      <div className="flex items-center gap-4">
+        <div className="p-3 rounded-xl bg-primary/10">
+          <Icon className="h-6 w-6 text-primary" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <h2 className="text-2xl font-bold">{value}</h2>
+          <p className="text-xs text-muted-foreground mt-1">{subtext}</p>
+        </div>
+      </div>
+    </Card>
   );
 }

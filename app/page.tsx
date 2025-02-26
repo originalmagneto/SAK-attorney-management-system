@@ -1,21 +1,8 @@
-/* eslint-disable react/no-unescaped-entities */
-
 'use client';
 
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
+import { Card, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Calendar,
-  Briefcase,
-  Clock,
-  MessageSquare,
-  Users,
-  FileText,
-  Bell,
-  ArrowUpRight,
-} from 'lucide-react';
-import Link from 'next/link';
 import {
   Area,
   AreaChart,
@@ -27,6 +14,17 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import {
+  Calendar,
+  Briefcase,
+  Clock,
+  MessageSquare,
+  Users,
+  FileText,
+  Bell,
+  ArrowUpRight,
+} from 'lucide-react';
+import Link from 'next/link';
 
 const stats = [
   {
@@ -35,6 +33,7 @@ const stats = [
     icon: Briefcase,
     change: '+2 this week',
     href: '/cases',
+    color: 'from-blue-500/20 to-blue-600/20'
   },
   {
     name: 'Upcoming Deadlines',
@@ -42,6 +41,7 @@ const stats = [
     icon: Calendar,
     change: '3 today',
     href: '/calendar',
+    color: 'from-purple-500/20 to-purple-600/20'
   },
   {
     name: 'Billable Hours',
@@ -49,6 +49,7 @@ const stats = [
     icon: Clock,
     change: 'This month',
     href: '/billing',
+    color: 'from-emerald-500/20 to-emerald-600/20'
   },
   {
     name: 'Unread Messages',
@@ -56,6 +57,7 @@ const stats = [
     icon: MessageSquare,
     change: '3 urgent',
     href: '/messages',
+    color: 'from-orange-500/20 to-orange-600/20'
   },
   {
     name: 'Active Clients',
@@ -63,6 +65,7 @@ const stats = [
     icon: Users,
     change: '+5 this quarter',
     href: '/clients',
+    color: 'from-pink-500/20 to-pink-600/20'
   },
   {
     name: 'Documents',
@@ -70,6 +73,7 @@ const stats = [
     icon: FileText,
     change: '12 need review',
     href: '/documents',
+    color: 'from-cyan-500/20 to-cyan-600/20'
   },
 ];
 
@@ -117,16 +121,19 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function Home() {
   return (
-    <div className="p-8">
+    <div className="p-8 max-w-[1600px] mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent animated-gradient">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
-            Welcome back! Here is your practice overview.
+          <h1 className="text-4xl font-bold text-gradient bg-clip-text">
+            Welcome Back
+          </h1>
+          <p className="text-muted-foreground mt-1 text-lg">
+            Here's your practice overview for today
           </p>
         </div>
-        <Button variant="outline" size="icon" className="hover-card glass-effect">
+        <Button variant="outline" size="icon" className="relative">
           <Bell className="h-5 w-5" />
+          <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-primary animate-ping-slow" />
         </Button>
       </div>
       
@@ -137,24 +144,31 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            whileHover={{ scale: 1.02 }}
           >
             <Link href={stat.href}>
-              <Card className="gradient-card hover-card glass-effect p-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-full bg-primary/10 animated-gradient">
-                    <stat.icon className="h-6 w-6 text-white" />
+              <Card
+                variant="glass"
+                isHoverable
+                className="overflow-hidden"
+              >
+                <div className="relative p-6">
+                  <div className="flex items-center gap-4">
+                    <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.color}`}>
+                      <stat.icon className="h-6 w-6 text-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {stat.name}
+                      </p>
+                      <h2 className="text-2xl font-bold tracking-tight mt-1">
+                        {stat.value}
+                      </h2>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {stat.change}
+                      </p>
+                    </div>
+                    <ArrowUpRight className="h-5 w-5 text-muted-foreground/50" />
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {stat.name}
-                    </p>
-                    <h2 className="text-2xl font-bold">{stat.value}</h2>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {stat.change}
-                    </p>
-                  </div>
-                  <ArrowUpRight className="h-5 w-5 text-primary" />
                 </div>
               </Card>
             </Link>
@@ -168,20 +182,41 @@ export default function Home() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card className="gradient-card hover-card glass-effect p-6">
-            <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent animated-gradient">Revenue Trend</h2>
-            <div className="h-[300px]">
+          <Card variant="modern" className="overflow-hidden">
+            <CardHeader>
+              <h2 className="text-xl font-semibold">Revenue Trend</h2>
+            </CardHeader>
+            <div className="h-[300px] p-6">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revenueData}>
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis 
+                    dataKey="month" 
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                  />
+                  <YAxis 
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={12}
+                  />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      borderColor: 'hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                  />
                   <Area
                     type="monotone"
                     dataKey="revenue"
                     stroke="hsl(var(--primary))"
-                    fill="hsl(var(--primary))"
-                    fillOpacity={0.2}
+                    strokeWidth={2}
+                    fill="url(#colorRevenue)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -194,25 +229,37 @@ export default function Home() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <Card className="gradient-card hover-card glass-effect p-6">
-            <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent animated-gradient">Case Distribution</h2>
-            <div className="h-[300px]">
+          <Card variant="modern" className="overflow-hidden">
+            <CardHeader>
+              <h2 className="text-xl font-semibold">Case Distribution</h2>
+            </CardHeader>
+            <div className="h-[300px] p-6">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={caseDistribution}
                     cx="50%"
                     cy="50%"
+                    innerRadius={60}
                     outerRadius={80}
                     fill="hsl(var(--primary))"
                     dataKey="value"
                     label={({name, percent}) => `${name} ${(percent * 100).toFixed(0)}%`}
                   >
                     {caseDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={`hsl(${220 + index * 20}, 70%, 50%)`} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={`hsl(${220 + index * 40}, 70%, 50%)`}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      borderColor: 'hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -226,9 +273,11 @@ export default function Home() {
         transition={{ delay: 0.4 }}
         className="mt-8"
       >
-        <h2 className="text-xl font-semibold mb-4 bg-clip-text text-transparent animated-gradient">Recent Activity</h2>
-        <Card className="gradient-card hover-card glass-effect">
-          <div className="divide-y divide-primary/10">
+        <Card variant="glass" className="overflow-hidden">
+          <CardHeader>
+            <h2 className="text-xl font-semibold">Recent Activity</h2>
+          </CardHeader>
+          <div className="divide-y divide-border">
             {recentActivity.map((activity, index) => (
               <motion.div
                 key={activity.id}

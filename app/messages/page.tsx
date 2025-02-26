@@ -1,190 +1,198 @@
 'use client';
 
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
+import { useState, useEffect } from 'react';
+import { MessageThreadList } from '@/components/message-thread-list';
+import { MessageThreadView } from '@/components/message-thread-view';
+import { useMessages } from '@/hooks/use-messages';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Search,
-  Send,
-  Paperclip,
-  User,
-  MoreVertical,
-  Clock,
-} from 'lucide-react';
+import { MessageThread } from '@/types/messages';
+import { sampleThreads, sampleMessages } from '@/lib/sample-messages';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { useUIStore } from '@/lib/store';
 
-const conversations = [
-  {
-    id: 1,
-    name: 'John Smith',
-    lastMessage: 'Thank you for the update on the case.',
-    time: '10:30 AM',
-    unread: true,
-  },
-  {
-    id: 2,
-    name: 'Tech Corp Team',
-    lastMessage: 'Contract review completed.',
-    time: 'Yesterday',
-    unread: false,
-  },
-  {
-    id: 3,
-    name: 'Sarah Brown',
-    lastMessage: 'When can we schedule the next meeting?',
-    time: 'Yesterday',
-    unread: true,
-  },
-];
-
-const messages = [
-  {
-    id: 1,
-    sender: 'John Smith',
-    content: 'Hello, I wanted to check on the status of my case.',
-    time: '10:15 AM',
-    type: 'received',
-  },
-  {
-    id: 2,
-    sender: 'Me',
-    content:
-      'Hi John, we\'ve made significant progress. The court hearing is scheduled for next week.',
-    time: '10:20 AM',
-    type: 'sent',
-  },
-  {
-    id: 3,
-    sender: 'John Smith',
-    content: 'Thank you for the update on the case.',
-    time: '10:30 AM',
-    type: 'received',
-  },
-];
+// Mock current user - replace with actual auth
+const currentUser = {
+  id: 'user-2',
+  name: 'Sarah Johnson',
+  role: 'Attorney',
+  avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&h=256&auto=format&fit=crop'
+};
 
 export default function MessagesPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [newMessage, setNewMessage] = useState('');
+  const [selectedThread, setSelectedThread] = useState<MessageThread | null>(null);
+  const [branchDialogOpen, setBranchDialogOpen] = useState(false);
+  const [branchTitle, setBranchTitle] = useState('');
+  const [branchMessageId, setBranchMessageId] = useState<string | null>(null);
+  
+  const { messagePanelSizes, setMessagePanelSizes } = useUIStore();
+  
+  const {
+    threads,
+    messages,
+    createThread,
+    sendMessage,
+    createBranch,
+    addReaction,
+    getThreadsByContext
+  } = useMessages({ currentUserId: currentUser.id });
+
+  // Initialize with sample data
+  useEffect(() => {
+    if (threads.length === 0) {
+      sampleThreads.forEach(thread => {
+        const threadId = createThread(
+          thread.title,
+          thread.contextType,
+          thread.contextId,
+          thread.contextTitle,
+          thread.participants.map(p => ({
+            ...p,
+            avatar: p.id === 'user-1' 
+              ? 'https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=256&h=256&auto=format&fit=crop'
+              : p.id === 'user-3'
+              ? 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&h=256&auto=format&fit=crop'
+              : p.id === 'user-4'
+              ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=256&h=256&auto=format&fit=crop'
+              : p.id === 'user-5'
+              ? 'https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=256&h=256&auto=format&fit=crop'
+              : p.id === 'user-6'
+              ? 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?q=80&w=256&h=256&auto=format&fit=crop'
+              : currentUser.avatar
+          })),
+          thread.metadata,
+          thread.parentThreadId
+        );
+
+        const threadMessages = sampleMessages[thread.id] || [];
+        threadMessages.forEach(msg => {
+          sendMessage(
+            threadId,
+            msg.content,
+            msg.replyToId,
+            msg.metadata,
+            msg.attachments as any
+          );
+        });
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    // Hydrate UI store
+    useUIStore.persist.rehydrate();
+  }, []);
+
+  const handleSendMessage = (content: string, replyToId?: string) => {
+    if (selectedThread) {
+      sendMessage(selectedThread.id, content, replyToId);
+    }
+  };
+
+  const handleCreateBranch = (messageId: string) => {
+    setBranchMessageId(messageId);
+    setBranchTitle('');
+    setBranchDialogOpen(true);
+  };
+
+  const handleConfirmBranch = () => {
+    if (selectedThread && branchMessageId && branchTitle.trim()) {
+      createBranch(selectedThread.id, branchMessageId, branchTitle);
+      setBranchDialogOpen(false);
+      setBranchMessageId(null);
+      setBranchTitle('');
+    }
+  };
+
+  const handleReaction = (messageId: string, emoji: string) => {
+    if (selectedThread) {
+      addReaction(selectedThread.id, messageId, emoji);
+    }
+  };
 
   return (
-    <div className="flex h-[calc(100vh-4rem)]">
-      <div className="w-80 border-r">
-        <div className="p-4">
-          <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search messages..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-          <div className="space-y-2">
-            {conversations.map((conversation) => (
-              <Card
-                key={conversation.id}
-                className={`p-3 cursor-pointer hover:bg-accent/50 ${
-                  conversation.id === 1 ? 'bg-accent' : ''
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <User className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-medium truncate">
-                        {conversation.name}
-                      </h3>
-                      <span className="text-xs text-muted-foreground">
-                        {conversation.time}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground truncate">
-                      {conversation.lastMessage}
-                    </p>
-                  </div>
-                  {conversation.unread && (
-                    <div className="w-2 h-2 rounded-full bg-primary"></div>
-                  )}
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      <div className="flex-1 flex flex-col">
-        <div className="p-4 border-b">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h2 className="font-medium">John Smith</h2>
-                <p className="text-sm text-muted-foreground">
-                  Case: Smith vs. Johnson
-                </p>
-              </div>
+    <TooltipProvider>
+      <>
+        <ResizablePanelGroup
+          direction="horizontal"
+          className="h-[calc(100vh-4rem)]"
+          onLayout={(sizes) => {
+            // Only update if the sizes actually changed
+            if (sizes[0] !== messagePanelSizes[0] || sizes[1] !== messagePanelSizes[1]) {
+              setMessagePanelSizes(sizes);
+            }
+          }}
+        >
+          <ResizablePanel 
+            defaultSize={messagePanelSizes[0]} 
+            minSize={20} 
+            maxSize={40}
+            className="overflow-hidden"
+          >
+            <div className="h-full border-r overflow-y-auto">
+              <MessageThreadList
+                threads={threads}
+                selectedThreadId={selectedThread?.id}
+                onThreadSelect={setSelectedThread}
+              />
             </div>
-            <Button variant="ghost" size="icon">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+          </ResizablePanel>
+          
+          <ResizableHandle withHandle />
+          
+          <ResizablePanel 
+            defaultSize={messagePanelSizes[1]}
+            className="overflow-hidden"
+          >
+            <div className="h-full">
+              {selectedThread ? (
+                <MessageThreadView
+                  thread={selectedThread}
+                  messages={messages[selectedThread.id] || []}
+                  currentUserId={currentUser.id}
+                  onSendMessage={handleSendMessage}
+                  onCreateBranch={handleCreateBranch}
+                  onReaction={handleReaction}
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  Select a conversation to start messaging
+                </div>
+              )}
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
 
-        <div className="flex-1 overflow-auto p-4 space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${
-                message.type === 'sent' ? 'justify-end' : 'justify-start'
-              }`}
-            >
-              <div
-                className={`max-w-[70%] ${
-                  message.type === 'sent'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-accent'
-                } rounded-lg p-3`}
-              >
-                <p>{message.content}</p>
-                <div
-                  className={`flex items-center gap-1 mt-1 text-xs ${
-                    message.type === 'sent'
-                      ? 'text-primary-foreground/70'
-                      : 'text-muted-foreground'
-                  }`}
+        <Dialog open={branchDialogOpen} onOpenChange={setBranchDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New Thread</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <Input
+                  placeholder="Thread title..."
+                  value={branchTitle}
+                  onChange={(e) => setBranchTitle(e.target.value)}
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setBranchDialogOpen(false)}
                 >
-                  <Clock className="h-3 w-3" />
-                  {message.time}
-                </div>
+                  Cancel
+                </Button>
+                <Button onClick={handleConfirmBranch}>
+                  Create Thread
+                </Button>
               </div>
             </div>
-          ))}
-        </div>
-
-        <div className="p-4 border-t">
-          <div className="flex gap-4">
-            <Textarea
-              placeholder="Type your message..."
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              className="min-h-[80px]"
-            />
-            <div className="flex flex-col gap-2">
-              <Button variant="outline" size="icon">
-                <Paperclip className="h-4 w-4" />
-              </Button>
-              <Button size="icon">
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+          </DialogContent>
+        </Dialog>
+      </>
+    </TooltipProvider>
   );
 }

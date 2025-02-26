@@ -2,25 +2,11 @@
 
 import { useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Search,
-  Filter,
-  Plus,
-  Download,
-  Clock,
-  EuroIcon,
-  TrendingUp,
-} from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
   SelectContent,
@@ -28,182 +14,254 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-const timeEntries = [
-  {
-    id: 1,
-    date: '2024-03-27',
-    client: 'Tech Corp',
-    case: 'Contract Review',
-    description: 'Document review and analysis',
-    duration: '2.5',
-    rate: '150',
-    amount: '375.00',
-    status: 'Unbilled',
-  },
-  {
-    id: 2,
-    date: '2024-03-27',
-    client: 'John Smith',
-    case: 'Smith vs. Johnson',
-    description: 'Court hearing preparation',
-    duration: '3.0',
-    rate: '150',
-    amount: '450.00',
-    status: 'Billed',
-  },
-  {
-    id: 3,
-    date: '2024-03-26',
-    client: 'Sarah Brown',
-    case: 'Estate Planning',
-    description: 'Client consultation',
-    duration: '1.5',
-    rate: '150',
-    amount: '225.00',
-    status: 'Unbilled',
-  },
-];
+import {
+  Clock,
+  DollarSign,
+  PieChart,
+  BarChart3,
+  Filter,
+  Download,
+  Plus,
+  Search,
+  Calendar,
+  UserCircle,
+  Briefcase,
+  FileText,
+  Tag
+} from 'lucide-react';
+import { sampleBillingEntries, billingStats } from '@/lib/sample-billing';
+import { format } from 'date-fns';
 
 export default function BillingPage() {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  
+  const filteredEntries = sampleBillingEntries.filter(entry => 
+    (selectedStatus === 'all' || entry.status === selectedStatus) &&
+    (selectedCategory === 'all' || entry.category === selectedCategory)
+  );
 
   return (
     <div className="p-8">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">Time & Billing</h1>
-          <p className="text-muted-foreground mt-1">
-            Track time and manage invoices
-          </p>
-        </div>
-        <div className="flex gap-4">
-          <Button variant="outline">
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </Button>
-          <Button>
-            <Plus className="h-4 w-4 mr-2" />
-            New Time Entry
-          </Button>
-        </div>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3 mb-8">
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <Clock className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Total Hours
-              </p>
-              <h2 className="text-2xl font-bold">164.5</h2>
-              <p className="text-xs text-muted-foreground">This month</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <EuroIcon className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Billable Amount
-              </p>
-              <h2 className="text-2xl font-bold">€24,675</h2>
-              <p className="text-xs text-muted-foreground">This month</p>
-            </div>
-          </div>
-        </Card>
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-full bg-primary/10">
-              <TrendingUp className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                Utilization
-              </p>
-              <h2 className="text-2xl font-bold">85%</h2>
-              <p className="text-xs text-muted-foreground">Target: 80%</p>
-            </div>
-          </div>
-        </Card>
-      </div>
-
-      <Card className="mb-8">
-        <div className="p-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search time entries..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 w-full sm:w-[300px]"
-            />
+      <div className="max-w-[1800px] mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold">Time & Billing</h1>
+            <p className="text-muted-foreground mt-1">
+              Track billable hours and manage invoices
+            </p>
           </div>
           <div className="flex items-center gap-4">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="billed">Billed</SelectItem>
-                <SelectItem value="unbilled">Unbilled</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" size="icon">
-              <Filter className="h-4 w-4" />
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              New Time Entry
+            </Button>
+            <Button variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Export
             </Button>
           </div>
         </div>
-      </Card>
 
-      <Card>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Client</TableHead>
-              <TableHead>Case</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-right">Duration (h)</TableHead>
-              <TableHead className="text-right">Rate (€)</TableHead>
-              <TableHead className="text-right">Amount (€)</TableHead>
-              <TableHead>Status</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {timeEntries.map((entry) => (
-              <TableRow key={entry.id}>
-                <TableCell>{entry.date}</TableCell>
-                <TableCell>{entry.client}</TableCell>
-                <TableCell>{entry.case}</TableCell>
-                <TableCell>{entry.description}</TableCell>
-                <TableCell className="text-right">{entry.duration}</TableCell>
-                <TableCell className="text-right">{entry.rate}</TableCell>
-                <TableCell className="text-right">{entry.amount}</TableCell>
-                <TableCell>
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      entry.status === 'Billed'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}
-                  >
-                    {entry.status}
-                  </span>
-                </TableCell>
-              </TableRow>
+        {/* Stats Overview */}
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+          <Card className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <Clock className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Billable Hours</p>
+                <h3 className="text-2xl font-bold">{billingStats.totalBillableHours}</h3>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <DollarSign className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Total Billed</p>
+                <h3 className="text-2xl font-bold">${billingStats.totalBilled.toLocaleString()}</h3>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <PieChart className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Utilization Rate</p>
+                <h3 className="text-2xl font-bold">{billingStats.utilization}%</h3>
+              </div>
+            </div>
+          </Card>
+
+          <Card className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-lg bg-primary/10">
+                <BarChart3 className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Collection Rate</p>
+                <h3 className="text-2xl font-bold">{billingStats.collectionRate}%</h3>
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Top Clients */}
+        <Card className="p-6">
+          <h2 className="text-lg font-semibold mb-4">Top Clients</h2>
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+            {billingStats.topClients.map((client, index) => (
+              <Card key={client.name} className="p-4">
+                <div className="flex items-center gap-4">
+                  <div className={`w-2 h-full rounded ${
+                    index === 0 ? 'bg-yellow-500' :
+                    index === 1 ? 'bg-gray-400' :
+                    'bg-amber-600'
+                  }`} />
+                  <div>
+                    <h3 className="font-medium">{client.name}</h3>
+                    <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-4 w-4" />
+                        {client.hours}h
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <DollarSign className="h-4 w-4" />
+                        ${client.amount.toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
             ))}
-          </TableBody>
-        </Table>
-      </Card>
+          </div>
+        </Card>
+
+        {/* Time Entries */}
+        <Card>
+          <div className="p-6 border-b">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Time Entries</h2>
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search entries..."
+                    className="pl-9 w-[300px]"
+                  />
+                </div>
+                <Select
+                  value={selectedStatus}
+                  onValueChange={setSelectedStatus}
+                >
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="billed">Billed</SelectItem>
+                    <SelectItem value="paid">Paid</SelectItem>
+                    <SelectItem value="disputed">Disputed</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={selectedCategory}
+                  onValueChange={setSelectedCategory}
+                >
+                  <SelectTrigger className="w-[150px]">
+                    <SelectValue placeholder="Category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="research">Research</SelectItem>
+                    <SelectItem value="drafting">Drafting</SelectItem>
+                    <SelectItem value="meeting">Meeting</SelectItem>
+                    <SelectItem value="court">Court</SelectItem>
+                    <SelectItem value="travel">Travel</SelectItem>
+                    <SelectItem value="communication">Communication</SelectItem>
+                    <SelectItem value="review">Review</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+
+          <ScrollArea className="h-[600px]">
+            <div className="p-6 space-y-4">
+              {filteredEntries.map(entry => (
+                <Card key={entry.id} className="p-4 hover:shadow-lg transition-shadow">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <h3 className="font-medium">{entry.description}</h3>
+                          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              {format(new Date(entry.date), 'MMM d, yyyy')}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <UserCircle className="h-4 w-4" />
+                              {entry.attorney}
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Briefcase className="h-4 w-4" />
+                              {entry.caseTitle}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{entry.category}</Badge>
+                          <Badge
+                            variant={
+                              entry.status === 'paid' ? 'default' :
+                              entry.status === 'disputed' ? 'destructive' :
+                              'secondary'
+                            }
+                          >
+                            {entry.status}
+                          </Badge>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-4 w-4 text-muted-foreground" />
+                            {entry.timeSpent} hours
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="h-4 w-4 text-muted-foreground" />
+                            ${(entry.timeSpent * entry.rate).toLocaleString()}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Tag className="h-4 w-4 text-muted-foreground" />
+                            ${entry.rate}/hour
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button variant="ghost" size="sm">Edit</Button>
+                          <Button variant="ghost" size="sm">Delete</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </ScrollArea>
+        </Card>
+      </div>
     </div>
   );
 }

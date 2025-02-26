@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,17 +9,34 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   ArrowRight,
-  Upload,
   FileText,
-  Calendar,
   CheckCircle,
-  AlertCircle,
+  AlertTriangle,
   Loader2,
   Bot,
-  UserPlus,
-  FolderTree
+  Sparkles,
+  Upload,
+  Scale,
+  Building,
+  Users,
+  Flag,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
+  LinkIcon,
+  Tags
 } from 'lucide-react';
 
 interface OnboardingStep {
@@ -36,49 +54,56 @@ export function AIOnboardingWizard() {
     company: '',
     email: '',
     phone: '',
-    notes: '',
+    type: '',
+    location: '',
+    website: '',
+    description: '',
+    legalStructure: '',
+    industry: '',
+    tags: [] as string[],
+    hasConflicts: false,
+    notes: ''
   });
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [analysisProgress, setAnalysisProgress] = useState(0);
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
+  const [aiAnalysis, setAiAnalysis] = useState({
+    conflictCheck: null as any,
+    suggestedTeam: [] as string[],
+    riskLevel: '',
+    suggestedPracticeAreas: [] as string[],
+    insights: [] as string[]
+  });
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const steps: OnboardingStep[] = [
     {
-      id: 'info',
-      title: 'Basic Information',
-      description: 'Enter client details and initial notes',
+      id: 'basic',
+      title: 'Basic Info',
+      description: 'Enter client details',
       isCompleted: Boolean(clientData.name && clientData.email),
-      isProcessing: false,
+      isProcessing: false
+    },
+    {
+      id: 'business',
+      title: 'Business Info',
+      description: 'Business structure & industry',
+      isCompleted: Boolean(clientData.type && clientData.industry),
+      isProcessing: false
     },
     {
       id: 'documents',
-      title: 'Document Upload',
-      description: 'Upload relevant client documents for AI analysis',
+      title: 'Documents',
+      description: 'Upload relevant documents',
       isCompleted: uploadedFiles.length > 0,
-      isProcessing: false,
+      isProcessing: false
     },
     {
       id: 'analysis',
       title: 'AI Analysis',
-      description: 'Analyzing documents and generating suggestions',
-      isCompleted: aiSuggestions.length > 0,
-      isProcessing: analysisProgress > 0 && analysisProgress < 100,
-    },
-    {
-      id: 'review',
-      title: 'Review & Confirm',
-      description: 'Review AI suggestions and confirm setup',
-      isCompleted: false,
-      isProcessing: false,
-    },
+      description: 'Review AI insights',
+      isCompleted: aiAnalysis.insights.length > 0,
+      isProcessing: isAnalyzing
+    }
   ];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setClientData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -86,280 +111,318 @@ export function AIOnboardingWizard() {
     }
   };
 
-  const simulateAIAnalysis = () => {
-    setAnalysisProgress(0);
-    const interval = setInterval(() => {
-      setAnalysisProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setAiSuggestions([
-            'Create dedicated case folder structure based on client industry',
-            'Schedule initial consultation for next week',
-            'Set up automated document reminders',
-            'Generate preliminary task checklist'
-          ]);
-          return 100;
-        }
-        return prev + 10;
+  const runAIAnalysis = async () => {
+    setIsAnalyzing(true);
+    // Simulate AI processing delay
+    setTimeout(() => {
+      setAiAnalysis({
+        conflictCheck: {
+          hasConflicts: false,
+          details: 'No potential conflicts found in current cases'
+        },
+        suggestedTeam: ['Jane Smith', 'Robert Wilson'],
+        riskLevel: 'Low',
+        suggestedPracticeAreas: ['Corporate Law', 'Intellectual Property'],
+        insights: [
+          'Client operates in a highly regulated industry',
+          'Similar case patterns found in previous matters',
+          'Regular compliance reviews recommended',
+          'Potential for long-term relationship based on business growth trajectory'
+        ]
       });
-    }, 500);
-  };
-
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 0:
-        return (
-          <div className="space-y-4">
-            <div className="grid gap-4">
-              <div>
-                <div className="relative group">
-                  <Input
-                    name="name"
-                    placeholder="Client Name"
-                    value={clientData.name}
-                    onChange={handleInputChange}
-                    className="transition-all duration-200 hover:shadow-sm focus:shadow-md"
-                    aria-label="Client Name"
-                  />
-                  <div className="absolute -top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 text-xs bg-background shadow-sm rounded-md px-2 py-1 pointer-events-none">
-                    Name used in auto-generated documents
-                  </div>
-                </div>
-              </div>
-              <div>
-                <Input
-                  name="company"
-                  placeholder="Company Name"
-                  value={clientData.company}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Input
-                  name="email"
-                  type="email"
-                  placeholder="Email Address"
-                  value={clientData.email}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Input
-                  name="phone"
-                  placeholder="Phone Number"
-                  value={clientData.phone}
-                  onChange={handleInputChange}
-                />
-              </div>
-              <div>
-                <Textarea
-                  name="notes"
-                  placeholder="Initial Notes"
-                  value={clientData.notes}
-                  onChange={handleInputChange}
-                />
-              </div>
-            </div>
-          </div>
-        );
-
-      case 1:
-        return (
-          <div className="space-y-4">
-            <Card className="p-4 border-dashed border-2 text-center transition-all duration-300 hover:border-primary hover:bg-accent/5">
-              <input
-                type="file"
-                multiple
-                onChange={handleFileUpload}
-                className="hidden"
-                id="file-upload"
-              />
-              <label htmlFor="file-upload" className="cursor-pointer">
-                <div className="flex flex-col items-center gap-2">
-                  <Upload className="h-8 w-8 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Drop files here or click to upload
-                  </p>
-                </div>
-              </label>
-            </Card>
-            {uploadedFiles.length > 0 && (
-              <div className="space-y-2">
-                {uploadedFiles.map((file, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    <span className="text-sm">{file.name}</span>
-                    <Badge variant="secondary">{Math.round(file.size / 1024)} KB</Badge>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium">Analyzing documents</span>
-                <span className="text-sm text-muted-foreground">{analysisProgress}%</span>
-              </div>
-              <Progress value={analysisProgress} className="transition-all duration-300" />
-              <div className="h-1 w-full bg-primary/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-primary to-primary/60 transition-all duration-300"
-                  style={{ width: `${analysisProgress}%` }}
-                />
-              </div>
-            </div>
-
-            {analysisProgress === 100 && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-green-600">
-                  <CheckCircle className="h-5 w-5" />
-                  <span>Analysis Complete</span>
-                </div>
-                <Card className="p-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Bot className="h-5 w-5 text-primary" />
-                      <h3 className="font-semibold">AI Suggestions</h3>
-                    </div>
-                    <ul className="space-y-2">
-                      {aiSuggestions.map((suggestion, index) => (
-                        <li key={index} className="flex items-start gap-2">
-                          <ArrowRight className="h-4 w-4 mt-1" />
-                          <span className="text-sm">{suggestion}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </Card>
-              </div>
-            )}
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-6">
-            <Card className="p-4">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">Client Profile</h3>
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                </div>
-                <div className="grid gap-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Name:</span>
-                    <span>{clientData.name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Company:</span>
-                    <span>{clientData.company}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Email:</span>
-                    <span>{clientData.email}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Phone:</span>
-                    <span>{clientData.phone}</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-semibold">Setup Actions</h3>
-                  <AlertCircle className="h-5 w-5 text-yellow-600" />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <FolderTree className="h-4 w-4" />
-                    <span className="text-sm">Create folder structure</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    <span className="text-sm">Schedule initial consultation</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <UserPlus className="h-4 w-4" />
-                    <span className="text-sm">Set up team access</span>
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </div>
-        );
-
-      default:
-        return null;
-    }
+      setIsAnalyzing(false);
+    }, 2000);
   };
 
   return (
-    <Card className="max-w-2xl mx-auto shadow-lg transition-all duration-300 hover:shadow-xl">
-      <div className="p-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-        <div className="flex items-center gap-4 mb-8">
-          <Bot className="h-8 w-8 text-primary" />
-          <div>
-            <h2 className="text-2xl font-bold">AI-Assisted Client Onboarding</h2>
-            <p className="text-muted-foreground">
-              Let our AI help you set up the perfect client workspace
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-4 gap-4 mb-8">
+    <div className="space-y-6">
+      {/* Progress Bar */}
+      <div className="relative">
+        <Progress value={(currentStep / (steps.length - 1)) * 100} className="h-2" />
+        <div className="flex justify-between mt-2">
           {steps.map((step, index) => (
-            <Card
-              key={step.id}
-              className={`p-4 transition-all duration-300 ${currentStep === index ? 'border-primary shadow-md scale-105' : 'hover:border-primary/50'}`}
-            >
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">{step.title}</span>
-                  {step.isCompleted && <CheckCircle className="h-4 w-4 text-green-600" />}
-                  {step.isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
-                </div>
-                <p className="text-xs text-muted-foreground">{step.description}</p>
-              </div>
-            </Card>
+            <div key={step.id} className="flex flex-col items-center" style={{ width: '25%' }}>
+              <motion.div
+                initial={false}
+                animate={{
+                  scale: index === currentStep ? [1, 1.1, 1] : 1,
+                  backgroundColor: index <= currentStep ? 'var(--primary)' : 'var(--muted)'
+                }}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
+                  ${index <= currentStep ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}
+              >
+                {step.isCompleted ? (
+                  <CheckCircle className="h-4 w-4" />
+                ) : (
+                  <span>{index + 1}</span>
+                )}
+              </motion.div>
+              <span className="text-xs mt-1.5 text-muted-foreground font-medium">{step.title}</span>
+            </div>
           ))}
         </div>
-
-        <ScrollArea className="h-[400px] mb-8">
-          {renderStepContent()}
-        </ScrollArea>
-
-        <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
-            disabled={currentStep === 0}
-          >
-            Back
-          </Button>
-          <Button
-            onClick={() => {
-              if (currentStep === 2) {
-                simulateAIAnalysis();
-              }
-              if (currentStep < steps.length - 1) {
-                setCurrentStep(prev => prev + 1);
-              }
-            }}
-            disabled={currentStep === 3}
-          >
-            {currentStep === steps.length - 1 ? 'Complete' : 'Continue'}
-          </Button>
-        </div>
       </div>
-    </Card>
+
+      {/* Step Content */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        {currentStep === 0 && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Client Name</Label>
+                <Input
+                  placeholder="Enter full name"
+                  value={clientData.name}
+                  onChange={(e) => setClientData({ ...clientData, name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Company Name</Label>
+                <Input
+                  placeholder="Enter company name"
+                  value={clientData.company}
+                  onChange={(e) => setClientData({ ...clientData, company: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  placeholder="Enter email address"
+                  value={clientData.email}
+                  onChange={(e) => setClientData({ ...clientData, email: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Phone</Label>
+                <Input
+                  placeholder="Enter phone number"
+                  value={clientData.phone}
+                  onChange={(e) => setClientData({ ...clientData, phone: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Location</Label>
+                <Input
+                  placeholder="City, Country"
+                  value={clientData.location}
+                  onChange={(e) => setClientData({ ...clientData, location: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Website</Label>
+                <Input
+                  placeholder="https://example.com"
+                  value={clientData.website}
+                  onChange={(e) => setClientData({ ...clientData, website: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 1 && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Client Type</Label>
+                <Select
+                  value={clientData.type}
+                  onValueChange={(value) => setClientData({ ...clientData, type: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="individual">Individual</SelectItem>
+                    <SelectItem value="corporate">Corporate</SelectItem>
+                    <SelectItem value="non-profit">Non-Profit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Legal Structure</Label>
+                <Select
+                  value={clientData.legalStructure}
+                  onValueChange={(value) => setClientData({ ...clientData, legalStructure: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select structure" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sole-prop">Sole Proprietorship</SelectItem>
+                    <SelectItem value="llc">LLC</SelectItem>
+                    <SelectItem value="corporation">Corporation</SelectItem>
+                    <SelectItem value="partnership">Partnership</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="col-span-2 space-y-2">
+                <Label>Industry</Label>
+                <Input
+                  placeholder="e.g. Technology, Healthcare, etc."
+                  value={clientData.industry}
+                  onChange={(e) => setClientData({ ...clientData, industry: e.target.value })}
+                />
+              </div>
+              <div className="col-span-2 space-y-2">
+                <Label>Business Description</Label>
+                <Textarea
+                  placeholder="Brief description of the client's business..."
+                  value={clientData.description}
+                  onChange={(e) => setClientData({ ...clientData, description: e.target.value })}
+                  rows={4}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {currentStep === 2 && (
+          <div className="space-y-4">
+            <Card className="p-6 border-dashed">
+              <div className="flex flex-col items-center justify-center text-center">
+                <Upload className="h-8 w-8 mb-4 text-muted-foreground" />
+                <h3 className="font-medium mb-1">Upload Documents</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Drag and drop files here or click to browse
+                </p>
+                <Label
+                  htmlFor="file-upload"
+                  className="cursor-pointer bg-primary text-primary-foreground px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
+                >
+                  Choose Files
+                </Label>
+                <input
+                  id="file-upload"
+                  type="file"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileUpload}
+                />
+              </div>
+            </Card>
+            
+            {uploadedFiles.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="font-medium text-sm">Uploaded Files</h4>
+                <ScrollArea className="h-[120px] rounded-md border">
+                  <div className="p-4 space-y-2">
+                    {uploadedFiles.map((file, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-blue-500" />
+                          <span className="text-sm font-medium">{file.name}</span>
+                        </div>
+                        <Badge variant="secondary">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
+          </div>
+        )}
+
+        {currentStep === 3 && (
+          <div className="space-y-4">
+            {isAnalyzing ? (
+              <div className="flex flex-col items-center justify-center py-8">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="h-8 w-8 text-primary" />
+                </motion.div>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Analyzing client data and documents...
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <Card className="p-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Scale className="h-5 w-5 text-green-500" />
+                      <h3 className="font-medium">Conflict Check</h3>
+                    </div>
+                    {aiAnalysis.conflictCheck && (
+                      <div className="flex items-center gap-2">
+                        {aiAnalysis.conflictCheck.hasConflicts ? (
+                          <AlertTriangle className="h-4 w-4 text-red-500" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        )}
+                        <span className="text-sm">{aiAnalysis.conflictCheck.details}</span>
+                      </div>
+                    )}
+                  </Card>
+
+                  <Card className="p-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Users className="h-5 w-5 text-blue-500" />
+                      <h3 className="font-medium">Suggested Team</h3>
+                    </div>
+                    <div className="space-y-2">
+                      {aiAnalysis.suggestedTeam.map((member, index) => (
+                        <div key={index} className="text-sm flex items-center gap-2">
+                          <CheckCircle className="h-3 w-3 text-green-500" />
+                          {member}
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+
+                  <Card className="p-4 col-span-2">
+                    <div className="flex items-center gap-2 mb-4">
+                      <Sparkles className="h-5 w-5 text-yellow-500" />
+                      <h3 className="font-medium">AI Insights</h3>
+                    </div>
+                    <div className="space-y-3">
+                      {aiAnalysis.insights.map((insight, index) => (
+                        <div key={index} className="flex items-start gap-2">
+                          <Bot className="h-4 w-4 text-primary mt-0.5" />
+                          <span className="text-sm">{insight}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </Card>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </motion.div>
+
+      {/* Navigation */}
+      <div className="flex justify-between pt-4 border-t">
+        <Button
+          variant="outline"
+          onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+          disabled={currentStep === 0}
+        >
+          Back
+        </Button>
+        <Button
+          onClick={() => {
+            if (currentStep === 2 && uploadedFiles.length > 0) {
+              runAIAnalysis();
+            }
+            if (currentStep < steps.length - 1) {
+              setCurrentStep(currentStep + 1);
+            }
+          }}
+        >
+          {currentStep === steps.length - 1 ? 'Complete' : 'Continue'}
+          <ArrowRight className="ml-2 h-4 w-4" />
+        </Button>
+      </div>
+    </div>
   );
 }
