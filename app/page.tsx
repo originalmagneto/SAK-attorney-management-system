@@ -80,7 +80,7 @@ const stats = [
     change: '12 need review',
     href: '/documents',
     color: 'from-cyan-500/20 to-cyan-600/20'
-  },
+  }
 ];
 
 const recentActivity = [
@@ -104,7 +104,7 @@ const recentActivity = [
     title: 'Court Hearing Scheduled',
     time: '2 hours ago',
     description: 'Regional Court Bratislava, Room 304',
-  },
+  }
 ];
 
 const revenueData = [
@@ -113,14 +113,14 @@ const revenueData = [
   { month: 'Mar', revenue: 14200 },
   { month: 'Apr', revenue: 18900 },
   { month: 'May', revenue: 16800 },
-  { month: 'Jun', revenue: 21500 },
+  { month: 'Jun', revenue: 21500 }
 ];
 
 const caseDistribution = [
   { name: 'Corporate', value: 35 },
   { name: 'Civil', value: 25 },
   { name: 'Criminal', value: 15 },
-  { name: 'Family', value: 25 },
+  { name: 'Family', value: 25 }
 ];
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -147,6 +147,9 @@ function Home() {
         {stats.map((stat, index) => (
           <StatsCard key={stat.name} stat={stat} index={index} />
         ))}
+
+
+
       </div>
 
 
@@ -154,9 +157,27 @@ function Home() {
 
       <div className="grid gap-6 md:grid-cols-2 mt-8">
         <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
+          initial={{ opacity: 0, x: -20 }
+
+
+}
+
+
+
+          animate={{ opacity: 1, x: 0 }
+
+
+}
+
+
+
+          transition={{ delay: 0.3 }
+
+
+}
+
+
+
         >
           <Card variant="modern" className="overflow-hidden">
             <CardHeader>
@@ -164,7 +185,10 @@ function Home() {
             </CardHeader>
             <div className="h-[300px] p-6">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={revenueData}>
+                <AreaChart data={revenueData}
+
+
+>
                   <defs>
                     <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -192,6 +216,9 @@ function Home() {
                     dataKey="revenue"
                     stroke="hsl(var(--primary))"
                     strokeWidth={2}
+
+
+
                     fill="url(#colorRevenue)"
                   />
                 </AreaChart>
@@ -201,9 +228,27 @@ function Home() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
+          initial={{ opacity: 0, x: 20 }
+
+
+}
+
+
+
+          animate={{ opacity: 1, x: 0 }
+
+
+}
+
+
+
+          transition={{ delay: 0.3 }
+
+
+}
+
+
+
         >
           <Card variant="modern" className="overflow-hidden">
             <CardHeader>
@@ -244,9 +289,27 @@ function Home() {
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        initial={{ opacity: 0, y: 20 }
+
+
+}
+
+
+
+        animate={{ opacity: 1, y: 0 }
+
+
+}
+
+
+
+        transition={{ delay: 0.4 }
+
+
+}
+
+
+
         className="mt-8"
       >
         <Card variant="glass" className="overflow-hidden">
@@ -257,22 +320,55 @@ function Home() {
             {recentActivity.map((activity, index) => (
               <motion.div
                 key={activity.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+
+
+
+                initial={{ opacity: 0, y: 10 }
+
+
+}
+
+
+
+                animate={{ opacity: 1, y: 0 }
+
+
+}
+
+
+
+                transition={{ delay: index * 0.1 }
+
+
+}
+
+
+
                 className="p-4 hover:bg-primary/5 transition-colors"
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="font-medium">{activity.title}</h3>
+                  <h3 className="font-medium">{activity.title}
+
+
+</h3>
                   <span className="text-sm text-muted-foreground">
                     {activity.time}
+
+
+
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
                   {activity.description}
+
+
+
                 </p>
               </motion.div>
             ))}
+
+
+
           </div>
         </Card>
       </motion.div>
