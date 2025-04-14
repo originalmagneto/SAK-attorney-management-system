@@ -4,6 +4,7 @@ import React from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import StatsCard from './StatsCard';
 import { SparkleEffect } from '@/components/ui/SparkleEffect';
+import AnimatedNumber from '@/components/ui/AnimatedNumber';
 import { useState } from 'react';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -30,29 +31,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-const AnimatedNumber = ({ value }: { value: number }) => {
-  const [displayValue, setDisplayValue] = useState(0);
-  React.useEffect(() => {
-    let frame: number;
-    let start = 0;
-    let end = Number(value);
-    let duration = 600;
-    let startTime: number | null = null;
-    function animate(ts: number) {
-      if (!startTime) startTime = ts;
-      const progress = Math.min((ts - startTime) / duration, 1);
-      setDisplayValue(Math.floor(progress * (end - start) + start));
-      if (progress < 1) {
-        frame = requestAnimationFrame(animate);
-      } else {
-        setDisplayValue(end);
-      }
-    }
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [value]);
-  return <span>{displayValue}</span>;
-};
 
 const stats = [
   {
