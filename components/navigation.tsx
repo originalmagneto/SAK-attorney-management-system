@@ -17,6 +17,11 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Switch } from '@/components/ui/switch';
+import { useTheme } from 'next-themes';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
+import { Sun, Moon } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 
 const navigation = [
   { name: 'Calendar', href: '/calendar', icon: Calendar },
@@ -31,6 +36,7 @@ const navigation = [
 export default function Navigation() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   return (
     <motion.div
@@ -127,7 +133,46 @@ export default function Navigation() {
             );
           })}
         </div>
-      </ScrollArea>
-    </motion.div>
+          {/* Dark/Light mode toggle */}
+          <div className="flex flex-col items-center py-6">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    aria-label="Toggle dark mode"
+                    className="flex items-center justify-center rounded-full p-2 hover:bg-accent transition-colors"
+                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  >
+                    <AnimatePresence mode="wait" initial={false}>
+                      {theme === 'dark' ? (
+                        <motion.span
+                          key="moon"
+                          initial={{ rotate: 90, opacity: 0 }}
+                          animate={{ rotate: 0, opacity: 1 }}
+                          exit={{ rotate: -90, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Moon className="h-6 w-6 text-yellow-300" />
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="sun"
+                          initial={{ rotate: -90, opacity: 0 }}
+                          animate={{ rotate: 0, opacity: 1 }}
+                          exit={{ rotate: 90, opacity: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Sun className="h-6 w-6 text-yellow-400" />
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="right">Toggle dark/light mode</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </ScrollArea>
+      </motion.div>
   );
 }
