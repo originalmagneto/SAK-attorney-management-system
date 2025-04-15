@@ -63,9 +63,10 @@ export async function POST(request: NextRequest) {
       firmId: newUser.firmId
     };
 
+    const secret = process.env.JWT_SECRET || 'development-secret';
     const token = sign(
       payload,
-      process.env.JWT_SECRET!,
+      secret,
       { expiresIn: '24h' }
     );
 
