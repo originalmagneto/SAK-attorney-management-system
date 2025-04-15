@@ -65,15 +65,31 @@ export class Store {
   private firms: Firm[] = [];
 
   private constructor() {
-    // Load data from localStorage if available
+    // Always ensure admin user exists
+    const adminUser = {
+      id: 'admin',
+      email: 'admin@sak.com',
+      name: 'System Admin',
+      passwordHash: '$2a$10$zXi2ESVDxVvM2u4tk0BWZOGAZAAhZHoA4AzQrBg4fkYgHb2lj3NGG', // Password: Admin123!
+      role: 'OWNER' as const,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    this.users = [adminUser];
+    
+    // Then load any additional users from localStorage if available
     if (typeof window !== 'undefined') {
       const savedUsers = localStorage.getItem('sak_users');
       if (savedUsers) {
-        this.users = JSON.parse(savedUsers).map((user: any) => ({
+        const parsedUsers = JSON.parse(savedUsers).map((user: any) => ({
           ...user,
           createdAt: new Date(user.createdAt),
           updatedAt: new Date(user.updatedAt)
-        }));
+        })) as User[];
+        // Add any users that aren't the admin
+        parsedUsers
+          .filter((u: User) => u.email !== 'admin@sak.com')
+          .forEach((u: User) => this.users.push(u));
       }
     }
   }
