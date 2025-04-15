@@ -65,48 +65,19 @@ export class Store {
   private timeEntries: TimeEntry[] = [];
   private firms: Firm[] = [];
 
-  private async initializeAdminUser() {
-    const adminPassword = 'Admin123!';
-    const hashedPassword = await bcryptjs.hash(adminPassword, 10);
-    return {
-      id: 'admin',
-      email: 'admin@sak.com',
-      name: 'System Admin',
-      passwordHash: hashedPassword,
-      role: 'OWNER' as const,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-  }
-
   private constructor() {
-    // Initialize admin user synchronously for constructor
+    // Initialize admin user with known good password hash for Admin123!
     const adminUser = {
       id: 'admin',
       email: 'admin@sak.com',
       name: 'System Admin',
-      passwordHash: '$2a$10$tXX8xz3QxI0TunWeQsxi8.0kXE1V9QiJeXUnomSp5hQk4o9uKoola', // Pre-hashed Admin123!
+      passwordHash: '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
       role: 'OWNER' as const,
       createdAt: new Date(),
       updatedAt: new Date()
     };
+    // Always start with admin user in the store
     this.users = [adminUser];
-    
-    // Then load any additional users from localStorage if available
-    if (typeof window !== 'undefined') {
-      const savedUsers = localStorage.getItem('sak_users');
-      if (savedUsers) {
-        const parsedUsers = JSON.parse(savedUsers).map((user: any) => ({
-          ...user,
-          createdAt: new Date(user.createdAt),
-          updatedAt: new Date(user.updatedAt)
-        })) as User[];
-        // Add any users that aren't the admin
-        parsedUsers
-          .filter((u: User) => u.email !== 'admin@sak.com')
-          .forEach((u: User) => this.users.push(u));
-      }
-    }
   }
 
   static getInstance(): Store {
