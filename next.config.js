@@ -11,6 +11,11 @@ const nextConfig = {
       }
     ]
   },
+  // Ensure fonts and assets are properly handled
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
+  webpack(config) {
+    return config;
+  },
   // Handle JWT operations in Node.js runtime
   experimental: {
     serverComponentsExternalPackages: ['jsonwebtoken', 'jws']

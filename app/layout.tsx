@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="sk" suppressHydrationWarning className="antialiased">
       <head>
-        {/* Remove preload link as fonts are already imported via CSS */}
+        {/* Fonts are loaded via npm packages */}
       </head>
       <body className={inter.className}>
         <ThemeProvider
