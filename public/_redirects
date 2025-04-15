@@ -1,0 +1,13 @@
+# Netlify _redirects file for handling client-side routing in Next.js
+
+# Handle API routes
+/api/*  /.netlify/functions/api/:splat  200
+
+# Handle Next.js static assets
+/_next/*  /_next/:splat  200
+
+# Handle all other routes - send to index for client-side routing
+/*  /index.html  200
+
+# Fallback for 404 errors with detailed logging
+/* /404.html 404

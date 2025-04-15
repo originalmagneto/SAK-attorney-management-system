@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import ErrorBoundary from '@/components/error-boundary';
+import LoggingInitializer from '@/components/logging-initializer';
+import DebugPanel from '@/components/debug-panel';
 import './globals.css';
 // Import fonts directly without preloading
 import '@fontsource/plus-jakarta-sans/400.css';
@@ -47,7 +50,10 @@ export default function RootLayout({
             
             <main className="flex-1 overflow-auto relative">
               <div className="relative z-10">
-                {children}
+                {/* Wrap content with ErrorBoundary to catch and log routing errors */}
+                <ErrorBoundary>
+                  {children}
+                </ErrorBoundary>
               </div>
               <motion.div
                 initial={{ scale: 0.8, opacity: 0 }}
@@ -69,6 +75,8 @@ export default function RootLayout({
             <ChatSidebar isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
           </div>
           <Toaster />
+          <LoggingInitializer />
+          {process.env.NODE_ENV !== 'production' && <DebugPanel />}
         </ThemeProvider>
       </body>
     </html>
