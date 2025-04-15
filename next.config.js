@@ -11,11 +11,9 @@ const nextConfig = {
       }
     ]
   },
+  // Handle JWT operations in Node.js runtime
   experimental: {
-    // Force server components by default
-    serverActions: true,
-    // Handle JWT operations in Node.js runtime
-    serverComponentsExternalPackages: ['jsonwebtoken'],
+    serverComponentsExternalPackages: ['jsonwebtoken', 'jws']
   },
   // Configure security headers
   async headers() {
@@ -51,6 +49,6 @@ const nextConfig = {
       }
     ];
   }
-}
+};
 
 module.exports = nextConfig;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -40,10 +40,16 @@ import {
   DollarSign,
   FileText,
   Bell,
+  Lock,
+  Calendar as CalendarIcon,
 } from 'lucide-react';
+import type { LucideProps } from 'lucide-react';
+import type { ComponentType } from 'react';
 
-const eventTypes = {
-  HEARING: { label: 'Hearing', icon: Calendar },
+type IconComponent = ComponentType<LucideProps & { className?: string }>;
+
+const eventTypes: Record<string, { label: string; icon: IconComponent }> = {
+  HEARING: { label: 'Hearing', icon: CalendarIcon },
   MEETING: { label: 'Meeting', icon: Users },
   DEPOSITION: { label: 'Deposition', icon: FileText },
   INTERNAL: { label: 'Internal', icon: Lock },
@@ -52,7 +58,7 @@ const eventTypes = {
   MEDIATION: { label: 'Mediation', icon: Users },
   TRAINING: { label: 'Training', icon: Users },
   BOARD_MEETING: { label: 'Board Meeting', icon: Users },
-};
+} as const;
 
 const legalEventSchema = z.object({
   title: z.string().min(2, { message: "Title is required" }),
@@ -161,8 +167,7 @@ export function LegalCalendarForm({
                       <SelectContent>
                         {Object.entries(eventTypes).map(([key, value]) => (
                           <SelectItem key={key} value={key}>
-                            <div className="flex items-center gap-2">
-                              <value.icon className="h-4 w-4" />
+                            <div className="flex items-center gap-2">                               <value.icon className="h-4 w-4" />
                               <span>{value.label}</span>
                             </div>
                           </SelectItem>
