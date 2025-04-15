@@ -120,8 +120,8 @@ export function TaskBoard({
 
   const handleTaskCreate = () => {
     const task: Task = {
-      id: Math.random().toString(36).substr(2, 9),
       ...newTask as Task,
+      id: Math.random().toString(36).substr(2, 9),
       createdAt: new Date().toISOString()
     };
     setTasks([...tasks, task]);
