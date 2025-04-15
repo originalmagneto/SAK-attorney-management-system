@@ -12,11 +12,19 @@
   NPM_FLAGS = "--legacy-peer-deps"
   NEXT_PRIVATE_RUNTIME = "nodejs"
   NODE_ENV = "production"
+  JWT_SECRET = "${JWT_SECRET}"
 
 [functions]
-  external_node_modules = ["@prisma/client", "jsonwebtoken"]
+  external_node_modules = ["@prisma/client", "jsonwebtoken", "bcryptjs"]
   included_files = ["prisma/**"]
   node_bundler = "esbuild"
+  
+[build.processing]
+  skip_processing = false
+
+[build.processing.js]
+  bundle = false
+  minify = false
 
 [[redirects]]
   from = "/api/*"

@@ -14,7 +14,9 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate('2024-02-01T10:00'),
     metadata: {
       location: 'Conference Room A',
-      attendees: ['user-1', 'user-2', 'user-3']
+      description: 'Weekly team status update',
+      priority: 'medium',
+      participants: ['user-1', 'user-2', 'user-3']
     }
   },
   {
@@ -24,8 +26,11 @@ export const sampleEvents: CalendarEvent[] = [
     start: toDate('2024-02-01T11:00'),
     end: toDate('2024-02-01T12:00'),
     metadata: {
-      caseId: 'case-123',
-      location: 'Office 2B'
+      caseNumber: 'case-123',
+      location: 'Office 2B',
+      description: 'Review of Johnson case documents and strategy',
+      priority: 'medium',
+      participants: []
     }
   },
   {
@@ -37,6 +42,8 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       client: 'Johnson Family',
       location: 'Meeting Room 2',
+      description: 'Consultation with Johnson family regarding their case',
+      priority: 'medium',
       participants: ['Sarah Johnson', 'Mark Johnson']
     }
   },
@@ -47,7 +54,9 @@ export const sampleEvents: CalendarEvent[] = [
     start: toDate("2024-02-01T17:00"),
     metadata: {
       priority: 'high',
-      client: 'Davis Industries'
+      client: 'Davis Industries',
+      description: 'Filing deadline for Davis Industries case documents',
+      participants: []
     }
   },
 
@@ -62,7 +71,9 @@ export const sampleEvents: CalendarEvent[] = [
       courthouse: 'Central District Court',
       courtroom: '3A',
       client: 'James Brown',
-      priority: 'high'
+      priority: 'high',
+      description: 'Hearing for Brown vs State case',
+      participants: []
     }
   },
   {
@@ -74,6 +85,8 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       location: 'Law Offices',
       client: 'Thompson LLC',
+      description: 'Deposition for Thompson case with expert witness',
+      priority: 'medium',
       participants: ['Expert Witness', 'Opposing Counsel']
     }
   },
@@ -85,6 +98,8 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-02T16:30"),
     metadata: {
       location: 'Conference Room B',
+      description: 'Internal strategy review meeting',
+      priority: 'medium',
       participants: ['Senior Partners']
     }
   },
@@ -98,6 +113,8 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-05T10:00"),
     metadata: {
       location: 'Main Conference Room',
+      description: 'Weekly planning session for all staff',
+      priority: 'medium',
       participants: ['All Staff']
     }
   },
@@ -109,7 +126,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-05T12:00"),
     metadata: {
       client: 'Wilson Family',
-      location: 'Meeting Room 1'
+      location: 'Meeting Room 1',
+      description: 'Estate planning consultation with Wilson Family',
+      priority: 'medium',
+      participants: []
     }
   },
   {
@@ -121,7 +141,9 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       location: 'Mediation Center',
       client: 'Roberts Manufacturing',
-      priority: 'high'
+      description: 'Mediation session for Roberts Manufacturing dispute',
+      priority: 'high',
+      participants: []
     }
   },
 
@@ -133,7 +155,9 @@ export const sampleEvents: CalendarEvent[] = [
     start: toDate("2024-02-06T09:00"),
     metadata: {
       client: 'Martinez',
-      priority: 'critical'
+      description: 'Statute of limitations deadline for Martinez case',
+      priority: 'critical',
+      participants: []
     }
   },
   {
@@ -144,7 +168,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-06T11:30"),
     metadata: {
       client: 'Tech Corp',
-      location: 'Virtual Meeting'
+      location: 'Virtual Meeting',
+      description: 'Client meeting with Tech Corp representatives',
+      priority: 'medium',
+      participants: []
     }
   },
   {
@@ -155,6 +182,8 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-06T15:00"),
     metadata: {
       location: 'Training Room',
+      description: 'Legal training session for junior associates',
+      priority: 'medium',
       participants: ['Junior Associates']
     }
   },
@@ -166,7 +195,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-06T17:00"),
     metadata: {
       client: 'Anderson Inc',
-      requiredDocuments: ['Case Files', 'Evidence Documents']
+      requiredDocuments: ['Case Files', 'Evidence Documents'],
+      description: 'Review of Anderson case documents',
+      priority: 'medium',
+      participants: []
     }
   },
 
@@ -180,7 +212,9 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-07T11:00"),
     metadata: {
       location: 'Executive Boardroom',
-      priority: 'high'
+      priority: 'high',
+      description: 'Board meeting with executive team',
+      participants: []
     }
   },
   {
@@ -191,7 +225,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-07T12:30"),
     metadata: {
       client: 'Harris Family',
-      location: 'Meeting Room 3'
+      location: 'Meeting Room 3',
+      description: 'Consultation with Harris family',
+      priority: 'medium',
+      participants: []
     }
   },
   {
@@ -201,7 +238,9 @@ export const sampleEvents: CalendarEvent[] = [
     start: toDate("2024-02-07T16:00"),
     metadata: {
       priority: 'high',
-      client: 'Multiple Cases'
+      client: 'Multiple Cases',
+      description: 'Court filing deadline for multiple cases',
+      participants: []
     }
   },
 
@@ -216,7 +255,9 @@ export const sampleEvents: CalendarEvent[] = [
       courthouse: 'District Court',
       courtroom: '5B',
       client: 'Phillips',
-      priority: 'high'
+      priority: 'high',
+      description: 'Hearing for Phillips vs State case',
+      participants: []
     }
   },
   {
@@ -226,7 +267,10 @@ export const sampleEvents: CalendarEvent[] = [
     start: toDate("2024-02-08T12:30"),
     end: toDate("2024-02-08T13:30"),
     metadata: {
-      location: 'Restaurant'
+      location: 'Restaurant',
+      description: 'Team lunch gathering',
+      priority: 'low',
+      participants: ['Team Members']
     }
   },
   {
@@ -237,7 +281,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-08T15:30"),
     metadata: {
       client: 'Global Industries',
-      location: 'Conference Room A'
+      location: 'Conference Room A',
+      description: 'Strategy meeting with Global Industries',
+      priority: 'medium',
+      participants: []
     }
   },
 
@@ -251,6 +298,8 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       location: 'Law Offices',
       client: 'Turner Case',
+      description: 'Deposition of expert witness for Turner case',
+      priority: 'high',
       participants: ['Dr. Smith', 'Opposing Counsel']
     }
   },
@@ -262,6 +311,8 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-09T15:30"),
     metadata: {
       location: 'Meeting Room 1',
+      description: 'Internal case review meeting',
+      priority: 'medium',
       participants: ['Legal Team']
     }
   },
@@ -273,7 +324,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-09T17:00"),
     metadata: {
       client: 'International Corp',
-      location: 'Virtual Meeting'
+      location: 'Virtual Meeting',
+      description: 'Call with International Corp representatives',
+      priority: 'medium',
+      participants: []
     }
   },
 
@@ -287,7 +341,8 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       location: 'Main Conference Room',
       participants: ['All Staff'],
-      priority: 'medium'
+      priority: 'medium',
+      description: 'Weekly team status meeting'
     }
   },
   {
@@ -298,7 +353,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-12T12:30"),
     metadata: {
       client: 'XYZ Corporation',
-      location: 'Meeting Room 2'
+      location: 'Meeting Room 2',
+      description: 'Initial intake meeting for new corporate matter',
+      priority: 'medium',
+      participants: []
     }
   },
   {
@@ -310,7 +368,9 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       location: 'Mediation Center',
       client: 'Smith vs Johnson',
-      priority: 'high'
+      priority: 'high',
+      description: 'Settlement conference for Smith vs Johnson case',
+      participants: []
     }
   },
 
@@ -325,7 +385,9 @@ export const sampleEvents: CalendarEvent[] = [
       courthouse: 'Superior Court',
       courtroom: '4C',
       client: 'Davis Industries',
-      priority: 'high'
+      priority: 'high',
+      description: 'Motion hearing for Davis Industries case',
+      participants: []
     }
   },
   {
@@ -337,7 +399,9 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       location: 'Review Room',
       participants: ['Junior Associates'],
-      requiredDocuments: ['Discovery Documents']
+      requiredDocuments: ['Discovery Documents'],
+      description: 'Document review session with junior associates',
+      priority: 'medium'
     }
   },
   {
@@ -348,7 +412,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-13T16:30"),
     metadata: {
       client: 'Roberts Manufacturing',
-      location: 'Virtual Meeting'
+      location: 'Virtual Meeting',
+      description: 'Update meeting with Roberts Manufacturing',
+      priority: 'medium',
+      participants: []
     }
   },
 
@@ -362,7 +429,9 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       location: 'Law Offices',
       client: 'Thompson LLC',
-      participants: ['Dr. Wilson', 'Opposing Counsel']
+      participants: ['Dr. Wilson', 'Opposing Counsel'],
+      description: 'Deposition of expert witness Dr. Wilson',
+      priority: 'high'
     }
   },
   {
@@ -373,7 +442,9 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-14T14:30"),
     metadata: {
       location: 'Conference Room B',
-      participants: ['Litigation Team']
+      participants: ['Litigation Team'],
+      description: 'Practice group meeting for litigation team',
+      priority: 'medium'
     }
   },
   {
@@ -383,7 +454,9 @@ export const sampleEvents: CalendarEvent[] = [
     start: toDate("2024-02-14T17:00"),
     metadata: {
       priority: 'high',
-      client: 'Phillips Case'
+      client: 'Phillips Case',
+      description: 'Deadline for filing brief in Phillips case',
+      participants: []
     }
   },
 
@@ -397,7 +470,10 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       courthouse: 'District Court',
       courtroom: '2A',
-      client: 'Multiple Cases'
+      client: 'Multiple Cases',
+      description: 'Case management conference for multiple cases',
+      priority: 'medium',
+      participants: []
     }
   },
   {
@@ -408,7 +484,10 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-15T14:30"),
     metadata: {
       client: 'Tech Corp',
-      location: 'Meeting Room 1'
+      location: 'Meeting Room 1',
+      description: 'Strategy session with Tech Corp',
+      priority: 'medium',
+      participants: []
     }
   },
   {
@@ -419,7 +498,9 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-15T16:30"),
     metadata: {
       location: 'Conference Room A',
-      priority: 'high'
+      priority: 'high',
+      description: 'Review of upcoming statute of limitations deadlines',
+      participants: []
     }
   },
 
@@ -433,7 +514,9 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       location: 'Mediation Center',
       client: 'Harris vs Global Corp',
-      priority: 'high'
+      priority: 'high',
+      description: 'Settlement negotiation for Harris vs Global Corp case',
+      participants: []
     }
   },
   {
@@ -444,7 +527,9 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-16T16:00"),
     metadata: {
       location: 'Training Room',
-      participants: ['All Associates']
+      participants: ['All Associates'],
+      description: 'Training session for all associates',
+      priority: 'medium'
     }
   },
   {
@@ -455,6 +540,8 @@ export const sampleEvents: CalendarEvent[] = [
     end: toDate("2024-02-16T17:30"),
     metadata: {
       location: 'Conference Room B',
+      description: 'Internal strategy review meeting',
+      priority: 'medium',
       participants: ['Senior Partners']
     }
   },
@@ -511,7 +598,9 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       requiredDocuments: ['Discovery Documents', 'Privilege Log'],
       priority: 'high',
-      client: 'Smith vs. Johnson'
+      client: 'Smith vs. Johnson',
+      description: 'Document production deadline for Smith vs. Johnson case',
+      participants: []
     }
   },
   {
@@ -525,7 +614,8 @@ export const sampleEvents: CalendarEvent[] = [
       participants: ['Mediator John Davis', 'All Parties', 'Counsel'],
       requiredDocuments: ['Settlement Proposal', 'Case Summary'],
       priority: 'high',
-      client: 'Smith vs. Johnson'
+      client: 'Smith vs. Johnson',
+      description: 'Mediation session for Smith vs. Johnson case'
     }
   },
   {
@@ -537,7 +627,9 @@ export const sampleEvents: CalendarEvent[] = [
     metadata: {
       priority: 'critical',
       client: 'Martinez Case',
-      requiredDocuments: ['Complaint Draft', 'Evidence Summary']
+      requiredDocuments: ['Complaint Draft', 'Evidence Summary'],
+      description: 'Statute of limitations deadline for product liability case',
+      participants: []
     }
   },
   {
@@ -550,7 +642,8 @@ export const sampleEvents: CalendarEvent[] = [
       location: 'Executive Boardroom',
       participants: ['Board Members', 'Legal Team'],
       requiredDocuments: ['Legal Update Presentation'],
-      priority: 'medium'
+      priority: 'medium',
+      description: 'Board meeting with executive team'
     }
   },
   {
@@ -564,7 +657,8 @@ export const sampleEvents: CalendarEvent[] = [
       participants: ['Key Witness', 'Trial Team'],
       requiredDocuments: ['Witness Outline', 'Key Documents'],
       priority: 'high',
-      client: 'Smith vs. Johnson'
+      client: 'Smith vs. Johnson',
+      description: 'Preparation session for key witness'
     }
   },
   {
@@ -579,7 +673,8 @@ export const sampleEvents: CalendarEvent[] = [
       participants: ['Judge Martinez', 'All Counsel'],
       requiredDocuments: ['Motion Papers', 'Supporting Exhibits'],
       priority: 'high',
-      client: 'Tech Solutions Inc.'
+      client: 'Tech Solutions Inc.',
+      description: 'Motion hearing for Tech Solutions Inc. case'
     }
   },
   {
@@ -592,7 +687,8 @@ export const sampleEvents: CalendarEvent[] = [
       location: 'Training Center',
       participants: ['Trial Team', 'External Consultant'],
       requiredDocuments: ['Training Materials'],
-      priority: 'medium'
+      priority: 'medium',
+      description: 'Training session for trial team'
     }
   }
 ];
