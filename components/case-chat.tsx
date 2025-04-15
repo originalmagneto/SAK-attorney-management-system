@@ -18,6 +18,7 @@ import {
   ChevronDown,
   Users,
 } from 'lucide-react';
+import Image from 'next/image';
 
 interface Message {
   id: number;
@@ -96,7 +97,12 @@ export function CaseChat({ messages, onSendMessage }: CaseChatProps) {
             >
               <div className="flex items-start gap-3">
                 <Avatar className="w-8 h-8">
-                  <img src={message.sender.avatar} alt={message.sender.name} />
+                  <Image 
+                    src={message.sender.avatar} 
+                    alt={message.sender.name}
+                    width={32}
+                    height={32} 
+                  />
                 </Avatar>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">

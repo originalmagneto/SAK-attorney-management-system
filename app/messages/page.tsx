@@ -41,8 +41,11 @@ export default function MessagesPage() {
 
   // Initialize with sample data
   useEffect(() => {
+    // Only initialize if no threads exist
     if (threads.length === 0) {
-      sampleThreads.forEach(thread => {
+      // Use a local function to avoid dependency issues
+      const initializeThread = async () => {
+        for (const thread of sampleThreads) {
         const threadId = createThread(
           thread.title,
           thread.contextType,
@@ -66,19 +69,23 @@ export default function MessagesPage() {
           thread.parentThreadId
         );
 
-        const threadMessages = sampleMessages[thread.id] || [];
-        threadMessages.forEach(msg => {
-          sendMessage(
-            threadId,
-            msg.content,
-            msg.replyToId,
-            msg.metadata,
-            msg.attachments as any
-          );
-        });
-      });
+          const threadMessages = sampleMessages[thread.id] || [];
+          for (const msg of threadMessages) {
+            await sendMessage(
+              threadId,
+              msg.content,
+              msg.replyToId,
+              msg.metadata,
+              msg.attachments as any
+            );
+          }
+        }
+      };
+      
+      // Execute the initialization
+      initializeThread();
     }
-  }, []);
+  }, [threads.length, createThread, sendMessage]);
 
   useEffect(() => {
     // Hydrate UI store
