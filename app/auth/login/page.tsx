@@ -36,8 +36,11 @@ export default function LoginPage() {
 
       const data = await response.json();
       
-      // Redirect to dashboard after successful login
-      router.push('/');
+      // Store the token in localStorage for client-side access
+      localStorage.setItem('auth_token', data.token);
+      
+      // Force a hard navigation to refresh the auth state
+      window.location.href = '/';
     } catch (error) {
       toast({
         title: "Error",
