@@ -87,7 +87,15 @@ export function NewCaseDialog({ open, onOpenChange }: NewCaseDialogProps) {
   const [step, setStep] = useState(1);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [aiSuggestions, setAiSuggestions] = useState<any | null>(null);
+  interface AIAnalysis {
+    suggestedPracticeArea: string;
+    riskLevel: 'high' | 'medium' | 'low';
+    suggestedFolderStructure: string[];
+    estimatedComplexity: string;
+    similarCases: string[];
+  }
+
+  const [aiSuggestions, setAiSuggestions] = useState<AIAnalysis | null>(null);
 
   const form = useForm<z.infer<typeof newCaseSchema>>({
     resolver: zodResolver(newCaseSchema),
