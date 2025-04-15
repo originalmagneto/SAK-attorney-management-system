@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import './globals.css';
+// Import fonts directly without preloading
 import '@fontsource/plus-jakarta-sans/400.css';
 import '@fontsource/plus-jakarta-sans/500.css';
 import '@fontsource/plus-jakarta-sans/600.css';
@@ -27,13 +28,7 @@ export default function RootLayout({
   return (
     <html lang="sk" suppressHydrationWarning className="antialiased">
       <head>
-        <link
-          rel="preload"
-          href="/@fontsource/plus-jakarta-sans/files/plus-jakarta-sans-latin-400-normal.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
+        {/* Remove preload link as fonts are already imported via CSS */}
       </head>
       <body className={inter.className}>
         <ThemeProvider

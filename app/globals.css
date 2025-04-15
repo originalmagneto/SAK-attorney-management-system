@@ -2,11 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Load Inter font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-@import '@fontsource/plus-jakarta-sans/400.css';
-@import '@fontsource/plus-jakarta-sans/500.css';
-@import '@fontsource/plus-jakarta-sans/600.css';
-@import '@fontsource/plus-jakarta-sans/700.css';
+
+/* Import Plus Jakarta Sans directly - these are already imported in layout.tsx */
+/* No need to re-import them here */
 
 @layer base {
   :root {
