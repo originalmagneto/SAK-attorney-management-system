@@ -1,7 +1,8 @@
 'use client';
+
 import React from "react";
 import { motion } from 'framer-motion';
-import StatsCard from '../app/StatsCard';
+import StatsCard from '@/components/stats-card';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {

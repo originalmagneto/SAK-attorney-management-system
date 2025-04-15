@@ -13,8 +13,9 @@
   NEXT_PRIVATE_RUNTIME = "nodejs"
 
 [functions]
-  external_node_modules = ["@prisma/client"]
+  external_node_modules = ["@prisma/client", "jsonwebtoken"]
   included_files = ["prisma/**"]
+  node_bundler = "esbuild"
 
 [[redirects]]
   from = "/api/*"
