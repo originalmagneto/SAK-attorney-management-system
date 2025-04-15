@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { NextRequest } from 'next/server';
-import bcrypt from 'bcryptjs';
+import bcryptjs from 'bcryptjs';
 import { z } from 'zod';
 import { sign } from 'jsonwebtoken';
 import { store } from '@/lib/store';
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isValidPassword = await bcrypt.compare(
+    const isValidPassword = await bcryptjs.compare(
       validatedData.password,
       user.passwordHash
     );

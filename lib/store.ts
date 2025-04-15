@@ -1,5 +1,6 @@
 // Simplified storage for serverless environment
 import { cookies } from 'next/headers';
+import bcryptjs from 'bcryptjs';
 
 interface User {
   id: string;
@@ -66,7 +67,7 @@ export class Store {
 
   private async initializeAdminUser() {
     const adminPassword = 'Admin123!';
-    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    const hashedPassword = await bcryptjs.hash(adminPassword, 10);
     return {
       id: 'admin',
       email: 'admin@sak.com',
