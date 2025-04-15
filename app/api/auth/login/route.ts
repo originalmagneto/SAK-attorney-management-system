@@ -29,7 +29,10 @@ export async function POST(request: NextRequest) {
     await rateLimiter(request);
     
     const body = await request.json();
+    console.log('Login attempt:', { email: body.email });
+    
     const validatedData = loginSchema.parse(body);
+    console.log('Data validation passed');
     
     const user = store.getUserByEmail(validatedData.email);
     

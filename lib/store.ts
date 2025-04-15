@@ -1,4 +1,5 @@
-// Simple in-memory storage for MVP
+// Simplified storage for serverless environment
+import { cookies } from 'next/headers';
 
 interface User {
   id: string;
@@ -63,11 +64,36 @@ export class Store {
   private timeEntries: TimeEntry[] = [];
   private firms: Firm[] = [];
 
-  private constructor() {}
+  private constructor() {
+    // Load data from localStorage if available
+    if (typeof window !== 'undefined') {
+      const savedUsers = localStorage.getItem('sak_users');
+      if (savedUsers) {
+        this.users = JSON.parse(savedUsers).map((user: any) => ({
+          ...user,
+          createdAt: new Date(user.createdAt),
+          updatedAt: new Date(user.updatedAt)
+        }));
+      }
+    }
+  }
 
   static getInstance(): Store {
     if (!Store.instance) {
       Store.instance = new Store();
+      // Add a default admin user if no users exist
+      if (Store.instance.users.length === 0) {
+        const adminUser = {
+          id: 'admin',
+          email: 'admin@sak.com',
+          name: 'System Admin',
+          passwordHash: '$2a$10$zXi2ESVDxVvM2u4tk0BWZOGAZAAhZHoA4AzQrBg4fkYgHb2lj3NGG', // Password: Admin123!
+          role: 'OWNER' as const,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        Store.instance.addUser(adminUser);
+      }
     }
     return Store.instance;
   }
@@ -79,6 +105,9 @@ export class Store {
 
   addUser(user: User): User {
     this.users.push(user);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sak_users', JSON.stringify(this.users));
+    }
     return user;
   }
 
