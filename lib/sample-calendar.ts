@@ -558,7 +558,8 @@ export const sampleEvents: CalendarEvent[] = [
       participants: ['Dr. James Wilson', 'Sarah Parker', 'Defense Counsel'],
       requiredDocuments: ['Expert Report', 'Case Files'],
       priority: 'high',
-      client: 'Johnson Manufacturing Co.'
+      client: 'Johnson Manufacturing Co.',
+      description: 'Deposition of expert witness for Johnson Manufacturing case'
     }
   },
   {
@@ -572,7 +573,8 @@ export const sampleEvents: CalendarEvent[] = [
       courtroom: '3A',
       participants: ['Judge Thompson', 'All Counsel'],
       priority: 'medium',
-      client: 'Smith vs. Johnson'
+      client: 'Smith vs. Johnson',
+      description: 'Status conference for Smith vs. Johnson case'
     }
   },
   {
@@ -586,7 +588,8 @@ export const sampleEvents: CalendarEvent[] = [
       participants: ['Client Executive Team', 'Legal Team'],
       requiredDocuments: ['Case Summary', 'Strategy Document'],
       priority: 'medium',
-      client: 'Tech Solutions Inc.'
+      client: 'Tech Solutions Inc.',
+      description: 'Strategy meeting with Tech Solutions Inc. executives'
     }
   },
   {
