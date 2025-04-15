@@ -8,13 +8,14 @@ import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card'
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const router = useRouter();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
-    password: ''
+    password: '',
+    name: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +23,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,17 +32,22 @@ export default function LoginPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Login failed');
+        throw new Error('Registration failed');
       }
 
       const data = await response.json();
       
-      // Redirect to dashboard after successful login
-      router.push('/');
+      toast({
+        title: "Success",
+        description: "Account created successfully. Please log in.",
+        variant: "default"
+      });
+      
+      router.push('/auth/login');
     } catch (error) {
       toast({
         title: "Error",
-        description: "Invalid email or password",
+        description: "Registration failed. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -53,11 +59,22 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <h1 className="text-2xl font-bold text-center">Login</h1>
-          <p className="text-muted-foreground text-center">Enter your credentials to continue</p>
+          <h1 className="text-2xl font-bold text-center">Create Account</h1>
+          <p className="text-muted-foreground text-center">Sign up to get started</p>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Enter your name"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -74,8 +91,9 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Enter your password (min. 8 characters)"
                 required
+                minLength={8}
                 value={formData.password}
                 onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
               />
@@ -87,12 +105,12 @@ export default function LoginPage() {
               className="w-full"
               disabled={isLoading}
             >
-              {isLoading ? 'Signing in...' : 'Sign In'}
+              {isLoading ? 'Creating Account...' : 'Create Account'}
             </Button>
             <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{' '}
-              <a href="/auth/register" className="text-primary hover:underline">
-                Register here
+              Already have an account?{' '}
+              <a href="/auth/login" className="text-primary hover:underline">
+                Sign in here
               </a>
             </div>
           </CardFooter>

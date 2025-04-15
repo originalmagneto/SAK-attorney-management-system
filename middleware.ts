@@ -57,7 +57,7 @@ export async function middleware(request: NextRequest) {
   });
 
   // Skip auth for public routes
-  if (request.nextUrl.pathname.match(/^\/(_next|api\/auth|favicon.ico)/)) {
+  if (request.nextUrl.pathname.match(/^\/(_next|api\/auth|auth\/|favicon.ico)/)) {
     return response;
   }
 
