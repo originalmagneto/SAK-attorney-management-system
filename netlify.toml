@@ -1,6 +1,7 @@
 [build]
   command = "npm install && npm run build"
   publish = ".next"
+  ignore_warnings = true
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
@@ -22,6 +23,13 @@
 [build.processing]
   skip_processing = false
 
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
+
 [build.processing.js]
   bundle = false
   minify = false
@@ -29,6 +37,11 @@
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/_next/*"
+  to = "/_next/:splat"
   status = 200
 
 [[redirects]]

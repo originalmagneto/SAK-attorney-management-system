@@ -12,7 +12,7 @@ const nextConfig = {
     ]
   },
   // Ensure fonts and assets are properly handled for Netlify deployment
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/_next/' : undefined,
+  assetPrefix: process.env.NODE_ENV === 'production' ? '' : undefined,
   // Add tracing for debugging routing issues
   distDir: process.env.NODE_ENV === 'production' ? '.next' : undefined,
   // Enable detailed logging for debugging
