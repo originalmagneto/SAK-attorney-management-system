@@ -34,9 +34,12 @@ export async function POST(request: NextRequest) {
     const validatedData = loginSchema.parse(body);
     console.log('Data validation passed');
     
+    console.log('Looking for user:', validatedData.email);
     const user = store.getUserByEmail(validatedData.email);
+    console.log('Found user:', user ? 'yes' : 'no');
     
     if (!user) {
+      console.log('Available users:', store.getUsers());
       throw new AppError(
         ErrorCode.UNAUTHORIZED,
         'Invalid credentials'

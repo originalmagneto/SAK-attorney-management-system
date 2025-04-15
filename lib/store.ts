@@ -64,13 +64,27 @@ export class Store {
   private timeEntries: TimeEntry[] = [];
   private firms: Firm[] = [];
 
+  private async initializeAdminUser() {
+    const adminPassword = 'Admin123!';
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    return {
+      id: 'admin',
+      email: 'admin@sak.com',
+      name: 'System Admin',
+      passwordHash: hashedPassword,
+      role: 'OWNER' as const,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+  }
+
   private constructor() {
-    // Always ensure admin user exists
+    // Initialize admin user synchronously for constructor
     const adminUser = {
       id: 'admin',
       email: 'admin@sak.com',
       name: 'System Admin',
-      passwordHash: '$2a$10$zXi2ESVDxVvM2u4tk0BWZOGAZAAhZHoA4AzQrBg4fkYgHb2lj3NGG', // Password: Admin123!
+      passwordHash: '$2a$10$tXX8xz3QxI0TunWeQsxi8.0kXE1V9QiJeXUnomSp5hQk4o9uKoola', // Pre-hashed Admin123!
       role: 'OWNER' as const,
       createdAt: new Date(),
       updatedAt: new Date()
