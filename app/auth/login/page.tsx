@@ -22,8 +22,6 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      console.log('Attempting login with:', { email: formData.email });
-      
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -33,26 +31,33 @@ export default function LoginPage() {
       });
 
       const data = await response.json();
-      console.log('Login response:', { status: response.status, data });
 
       if (!response.ok) {
         throw new Error(data.error || 'Login failed');
       }
       
-      // Store the token in localStorage for client-side access
       if (!data.token) {
         throw new Error('No token received from server');
       }
       
+      // Store the token in localStorage
       localStorage.setItem('auth_token', data.token);
-      console.log('Token stored, redirecting...');
       
-      // Force a hard navigation to refresh the auth state
-      window.location.href = '/';
+      // Show success message
+      toast({
+        title: "Success",
+        description: "Logged in successfully",
+      });
+      
+      // Use router.push for client-side navigation
+      router.push('/');
+      // Force a refresh of the page data
+      router.refresh();
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Error",
-        description: "Invalid email or password",
+        description: error instanceof Error ? error.message : "Invalid email or password",
         variant: "destructive"
       });
     } finally {
