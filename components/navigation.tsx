@@ -13,6 +13,7 @@ import {
   Users,
   FileText,
   Menu,
+  LogOut,
   ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,7 @@ import { useTheme } from 'next-themes';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { Sun, Moon } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/contexts/auth-context';
 
 const navigation = [
   { name: 'Calendar', href: '/calendar', icon: Calendar },
@@ -37,6 +39,7 @@ export default function Navigation() {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const { theme, setTheme } = useTheme();
+  const { logout } = useAuth();
 
   return (
     <motion.div
@@ -132,47 +135,22 @@ export default function Navigation() {
               </Link>
             );
           })}
+
+          {/* Add logout button at the bottom */}
+          <motion.div
+            whileHover={{ x: 4 }}
+            className={cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors mt-auto',
+              'hover:bg-destructive/10 hover:text-destructive cursor-pointer',
+              isCollapsed && 'justify-center'
+            )}
+            onClick={logout}
+          >
+            <LogOut className="h-5 w-5" />
+            {!isCollapsed && <span>Logout</span>}
+          </motion.div>
         </div>
-          {/* Dark/Light mode toggle */}
-          <div className="flex flex-col items-center py-6">
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    aria-label="Toggle dark mode"
-                    className="flex items-center justify-center rounded-full p-2 hover:bg-accent transition-colors"
-                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  >
-                    <AnimatePresence mode="wait" initial={false}>
-                      {theme === 'dark' ? (
-                        <motion.span
-                          key="moon"
-                          initial={{ rotate: 90, opacity: 0 }}
-                          animate={{ rotate: 0, opacity: 1 }}
-                          exit={{ rotate: -90, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <Moon className="h-6 w-6 text-yellow-300" />
-                        </motion.span>
-                      ) : (
-                        <motion.span
-                          key="sun"
-                          initial={{ rotate: -90, opacity: 0 }}
-                          animate={{ rotate: 0, opacity: 1 }}
-                          exit={{ rotate: 90, opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <Sun className="h-6 w-6 text-yellow-400" />
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="right">Toggle dark/light mode</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
-        </ScrollArea>
-      </motion.div>
+      </ScrollArea>
+    </motion.div>
   );
 }

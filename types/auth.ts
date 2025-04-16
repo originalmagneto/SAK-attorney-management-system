@@ -1,27 +1,21 @@
 export type UserRole = 'OWNER' | 'PARTNER' | 'ASSOCIATE' | 'STAFF';
 
-export interface AuthUser {
+export interface User {
   id: string;
   email: string;
   name: string;
   role: UserRole;
-  firmId?: string;
 }
 
 export interface JWTPayload {
   userId: string;
   email: string;
   role: UserRole;
-  firmId?: string;
+  iat?: number;
+  exp?: number;
 }
 
-export interface LoginResponse {
+export interface AuthResponse {
   token: string;
-  user: AuthUser;
-}
-
-export interface RegisterResponse {
-  message: string;
-  token: string;
-  user: AuthUser;
+  user: User;
 }

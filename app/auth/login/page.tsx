@@ -7,10 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardContent, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
@@ -40,8 +42,8 @@ export default function LoginPage() {
         throw new Error('No token received from server');
       }
       
-      // Store the token in localStorage
-      localStorage.setItem('auth_token', data.token);
+      // Use the auth context to handle login
+      login(data.token);
       
       // Show success message
       toast({
@@ -49,9 +51,8 @@ export default function LoginPage() {
         description: "Logged in successfully",
       });
 
-      // Navigate to home page and refresh the application state
-      router.refresh(); // Refresh current route data
-      router.replace('/'); // Replace current route with home page
+      // Navigate to home page
+      router.replace('/');
     } catch (error) {
       console.error('Login error:', error);
       toast({
