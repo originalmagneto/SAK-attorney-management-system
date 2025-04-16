@@ -49,23 +49,23 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  // Add CORS headers to all responses
-  const response = NextResponse.next();
-  const origin = request.headers.get('origin') || '*';
-  Object.entries(corsHeaders(origin)).forEach(([key, value]) => {
-    response.headers.set(key, value);
-  });
-
-  // Skip auth for public routes
-  if (request.nextUrl.pathname.match(/^\/(_next|api\/auth|auth\/|favicon.ico)/)) {
-    return response;
+  // Public routes that don't require authentication
+  const publicRoutes = ['/auth/login', '/auth/register', '/api/auth/login', '/api/auth/register'];
+  if (publicRoutes.some(route => request.nextUrl.pathname.startsWith(route))) {
+    return NextResponse.next();
   }
 
-  const token = request.cookies.get('token')?.value;
+  // Get token from Authorization header or cookie
+  const token = request.headers.get('Authorization')?.split(' ')[1] || 
+                request.cookies.get('auth_token')?.value;
+
+  // If no token is present, redirect to login
   if (!token) {
-    if (request.nextUrl.pathname.startsWith('/api/')) {
-      return createErrorResponse(
-        new AppError(ErrorCode.UNAUTHORIZED, 'Authentication required')
+    const isApiRoute = request.nextUrl.pathname.startsWith('/api/');
+    if (isApiRoute) {
+      return new NextResponse(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { 'Content-Type': 'application/json' } }
       );
     }
     return NextResponse.redirect(new URL('/auth/login', request.url));
@@ -74,54 +74,14 @@ export async function middleware(request: NextRequest) {
   // Verify token
   const payload = verifyToken(token);
   if (!payload) {
-    if (request.nextUrl.pathname.startsWith('/api/')) {
-      return createErrorResponse(
-        new AppError(ErrorCode.UNAUTHORIZED, 'Invalid token')
-      );
-    }
-    return NextResponse.redirect(new URL('/auth/login', request.url));
-  }
-
-  // Role-based access control for specific routes
-  const roleProtectedRoutes = [
-    {
-      path: '/api/firms',
-      methods: ['POST'],
-      role: 'OWNER'
-    },
-    {
-      path: '/api/firms/:firmId/invite',
-      methods: ['POST'],
-      role: 'PARTNER'
-    },
-    {
-      path: '/api/users/:userId/rate',
-      methods: ['PATCH'],
-      role: 'PARTNER'
-    }
-  ];
-
-  // Check role-based permissions
-  const matchedRoute = roleProtectedRoutes.find(route => {
-    const pathRegex = new RegExp('^' + route.path.replace(/:[^/]+/g, '[^/]+') + '$');
-    return pathRegex.test(request.nextUrl.pathname) && 
-           route.methods.includes(request.method);
-  });
-
-  if (matchedRoute && !hasRequiredRole(payload.role, matchedRoute.role)) {
-    return createErrorResponse(
-      new AppError(ErrorCode.FORBIDDEN, 'Insufficient permissions')
+    return new NextResponse(
+      JSON.stringify({ error: 'Invalid token' }),
+      { status: 401, headers: { 'Content-Type': 'application/json' } }
     );
   }
 
-  // Add user information to request headers
-  response.headers.set('x-user-id', payload.userId);
-  response.headers.set('x-user-role', payload.role);
-  if (payload.firmId) {
-    response.headers.set('x-firm-id', payload.firmId);
-  }
-
-  return response;
+  // Continue with the request
+  return NextResponse.next();
 }
 
 // Configure which routes should be handled by the middleware

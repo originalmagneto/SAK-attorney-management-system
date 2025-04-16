@@ -48,11 +48,10 @@ export default function LoginPage() {
         title: "Success",
         description: "Logged in successfully",
       });
-      
-      // Use router.push for client-side navigation
-      router.push('/');
-      // Force a refresh of the page data
-      router.refresh();
+
+      // Navigate to home page and refresh the application state
+      router.refresh(); // Refresh current route data
+      router.replace('/'); // Replace current route with home page
     } catch (error) {
       console.error('Login error:', error);
       toast({
