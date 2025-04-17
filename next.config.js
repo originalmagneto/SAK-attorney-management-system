@@ -47,10 +47,6 @@ const nextConfig = {
             value: 'SAMEORIGIN'
           },
           {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff'
-          },
-          {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin'
           },
@@ -59,6 +55,19 @@ const nextConfig = {
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
           }
         ]
+      },
+      {
+        // Set correct MIME types for static assets
+        source: '/_next/static/chunks/:file*',
+        headers: [{ key: 'Content-Type', value: 'application/javascript' }]
+      },
+      {
+        source: '/_next/static/css/:file*',
+        headers: [{ key: 'Content-Type', value: 'text/css' }]
+      },
+      {
+        source: '/_next/static/media/:file*.woff2',
+        headers: [{ key: 'Content-Type', value: 'font/woff2' }]
       }
     ];
   }

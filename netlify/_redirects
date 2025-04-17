@@ -1,0 +1,14 @@
+# Ensure proper MIME type handling for Next.js static assets
+
+# JavaScript files
+/_next/static/chunks/*.js  application/javascript  200
+/_next/static/*.js         application/javascript  200
+
+# CSS files
+/_next/static/css/*.css   text/css               200
+
+# Font files
+/_next/static/media/*.woff2  font/woff2         200
+
+# JSON files
+/_next/static/*.json      application/json       200

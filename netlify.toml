@@ -30,6 +30,13 @@
   bundle = false
   minify = false
 
+# Ensure proper MIME types for static assets
+[build.processing.html.headers]
+  "/*.js" = { "Content-Type" = "application/javascript" }
+  "/*.css" = { "Content-Type" = "text/css" }
+  "/*.woff2" = { "Content-Type" = "font/woff2" }
+  "/*.json" = { "Content-Type" = "application/json" }
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"

@@ -1,0 +1,25 @@
+# Custom Netlify Headers file
+# Set correct MIME types for Next.js static assets
+
+# JavaScript files
+/_next/static/chunks/*.js
+  Content-Type: application/javascript
+
+# CSS files
+/_next/static/css/*.css
+  Content-Type: text/css
+
+# Font files
+/_next/static/media/*.woff2
+  Content-Type: font/woff2
+
+# JSON files
+/_next/static/*.json
+  Content-Type: application/json
+
+# Set security headers for all paths
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
