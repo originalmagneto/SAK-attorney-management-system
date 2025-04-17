@@ -27,49 +27,6 @@ const nextConfig = {
   // Handle JWT operations in Node.js runtime
   experimental: {
     serverComponentsExternalPackages: ['jsonwebtoken', 'jws']
-  },
-  // Configure security headers
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on'
-          },
-          {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000; includeSubDomains'
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN'
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin'
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
-          }
-        ]
-      },
-      {
-        // Set correct MIME types for static assets
-        source: '/_next/static/chunks/:file*',
-        headers: [{ key: 'Content-Type', value: 'application/javascript' }]
-      },
-      {
-        source: '/_next/static/css/:file*',
-        headers: [{ key: 'Content-Type', value: 'text/css' }]
-      },
-      {
-        source: '/_next/static/media/:file*.woff2',
-        headers: [{ key: 'Content-Type', value: 'font/woff2' }]
-      }
-    ];
   }
 };
 
