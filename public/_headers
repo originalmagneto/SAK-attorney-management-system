@@ -5,21 +5,25 @@
 /_next/static/chunks/*.js
   Content-Type: application/javascript; charset=utf-8
   Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
 
 # CSS files
 /_next/static/css/*.css
   Content-Type: text/css; charset=utf-8
   Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
 
 # Font files
 /_next/static/media/*.woff2
   Content-Type: font/woff2
   Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
 
 # JSON files
 /_next/static/*.json
   Content-Type: application/json; charset=utf-8
   Cache-Control: public, max-age=31536000, immutable
+  X-Content-Type-Options: nosniff
 
 # Set security headers for all paths except static assets
 /(?!_next/static/).*
