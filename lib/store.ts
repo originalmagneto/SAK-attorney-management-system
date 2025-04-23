@@ -63,7 +63,10 @@ export class Store {
   private timeEntries: TimeEntry[] = [];
   private firms: Firm[] = [];
 
-  private constructor() {}
+  private constructor() {
+    // Import sample data
+    import('./sample-users').catch(console.error);
+  }
 
   static getInstance(): Store {
     if (!Store.instance) {
